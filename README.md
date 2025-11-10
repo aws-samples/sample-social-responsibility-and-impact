@@ -88,7 +88,7 @@ NotifyQueue SQS → API Gateway (Cognito) → CloudFront Web UI
     ├── USE_CASES.md              # Industry examples
     ├── CUSTOMIZATION.md          # Adaptation guide
     ├── ARCHITECTURE.md           # System design
-    └── DEPLOYMENT.md             # Deployment instructions
+    └── DEPLOYMENT_GUIDE.md       # Deployment instructions
 ```
 
 ## 🎯 Use Cases
@@ -187,7 +187,7 @@ npm run build
 aws s3 sync build/ s3://<YOUR_WEB_BUCKET>/ --delete
 ```
 
-**See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed step-by-step instructions.**
+**See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed step-by-step instructions.**
 
 ## 🎨 Customization
 
@@ -317,8 +317,8 @@ DEMO_MODE = True  # Processes all weather conditions, not just threshold exceeda
 - **[USE_CASES.md](USE_CASES.md)** - Industry examples with sample data and prompts
 - **[CUSTOMIZATION.md](CUSTOMIZATION.md)** - Complete guide to adapting for your industry
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design, patterns, and decisions
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Step-by-step deployment instructions
-- **[AWS_SAMPLES_COMPLIANCE_REPORT.md](AWS_SAMPLES_COMPLIANCE_REPORT.md)** - Security and compliance details
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
+- **[USE_CASES.md](USE_CASES.md)** - Industry examples and use cases
 
 ## 🎓 What You'll Learn
 
@@ -364,11 +364,11 @@ This project is licensed under the MIT-0 License. See [LICENSE](LICENSE) file.
 
 ### Troubleshooting
 
-- **Deployment issues**: See [DEPLOYMENT.md](DEPLOYMENT.md)
+- **Deployment issues**: See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
 - **Customization questions**: See [CUSTOMIZATION.md](CUSTOMIZATION.md)
 - **Lambda errors**: Check CloudWatch Logs
 - **Failed messages**: Check SQS Dead Letter Queues
-- **Security questions**: See [AWS_SAMPLES_COMPLIANCE_REPORT.md](AWS_SAMPLES_COMPLIANCE_REPORT.md)
+- **Architecture questions**: See [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ### Getting Help
 

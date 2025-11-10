@@ -608,7 +608,7 @@ Plan for delays. Safety first. 🚛
 
 - **CUSTOMIZATION.md**: Detailed adaptation guide
 - **ARCHITECTURE.md**: System design and components
-- **DEPLOYMENT.md**: Step-by-step deployment instructions
+- **DEPLOYMENT_GUIDE.md**: Step-by-step deployment instructions
 - **examples/**: Sample data and configurations for each use case
 
 ---
