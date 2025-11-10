@@ -1,0 +1,203 @@
+.map-view {
+  background: white;
+  border-radius: 12px;
+  padding: 0;
+  min-height: 600px;
+  position: relative;
+  overflow: hidden;
+}
+
+.map-container {
+  width: 100%;
+  height: 600px;
+  border-radius: 12px;
+}
+
+.map-legend {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  background: white;
+  padding: 1rem;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  max-width: 250px;
+}
+
+.map-legend h4 {
+  margin: 0 0 0.75rem 0;
+  font-size: 0.9rem;
+  color: #333;
+  font-weight: 600;
+}
+
+.legend-items {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.legend-color {
+  width: 16px;
+  height: 16px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  border: 2px solid white;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+}
+
+.map-stats {
+  margin: 0.75rem 0 0 0;
+  padding-top: 0.75rem;
+  border-top: 1px solid #e5e7eb;
+  font-size: 0.8rem;
+  color: #999;
+  text-align: center;
+}
+
+/* Error/Fallback view */
+.map-error {
+  padding: 2rem;
+  text-align: center;
+}
+
+.map-error h3 {
+  font-size: 1.5rem;
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.map-error > p {
+  color: #666;
+  margin-bottom: 2rem;
+}
+
+.location-list {
+  max-width: 600px;
+  margin: 0 auto;
+  text-align: left;
+}
+
+.location-item {
+  display: flex;
+  gap: 1rem;
+  padding: 1rem;
+  background: #f9fafb;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  align-items: center;
+}
+
+.location-marker {
+  width: 40px;
+  height: 40px;
+  background: #667eea;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+  flex-shrink: 0;
+}
+
+.location-details {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.location-details strong {
+  color: #333;
+}
+
+.location-details span {
+  font-size: 0.85rem;
+  color: #666;
+}
+
+.temp-indicator {
+  display: inline-block;
+  padding: 0.2rem 0.6rem;
+  border-radius: 12px;
+  color: white;
+  font-size: 0.8rem;
+  font-weight: 600;
+  width: fit-content;
+}
+
+/* Leaflet popup styles */
+.marker-popup {
+  max-height: 400px;
+  overflow-y: auto;
+}
+
+.marker-popup h3 {
+  margin: 0 0 10px 0;
+  color: #333;
+  font-size: 1.1rem;
+  font-weight: 600;
+}
+
+.temp-badge-popup {
+  display: inline-block;
+  padding: 6px 12px;
+  color: white;
+  border-radius: 6px;
+  font-weight: bold;
+  font-size: 0.9rem;
+  margin-bottom: 10px;
+}
+
+.marker-popup .advice-text {
+  margin: 10px 0;
+  color: #666;
+  font-size: 0.9rem;
+  line-height: 1.4;
+  max-height: 250px;
+  overflow-y: auto;
+}
+
+.marker-popup .coordinates {
+  margin: 8px 0 0 0;
+  color: #999;
+  font-size: 0.8rem;
+}
+
+/* Custom marker styles */
+.custom-marker {
+  background: transparent;
+  border: none;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .map-legend {
+    top: 10px;
+    right: 10px;
+    max-width: 200px;
+    padding: 0.75rem;
+  }
+
+  .map-legend h4 {
+    font-size: 0.8rem;
+  }
+
+  .legend-item {
+    font-size: 0.75rem;
+  }
+
+  .map-container {
+    height: 500px;
+  }
+}

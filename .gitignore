@@ -1,0 +1,115 @@
+# CDK
+cdk/node_modules/
+cdk/cdk.out/
+cdk/*.js
+cdk/*.d.ts
+cdk/.DS_Store
+
+# Lambda
+lambda/**/__pycache__/
+lambda/**/*.pyc
+lambda/**/package/
+lambda/**/.pytest_cache/
+
+# Lambda bundled dependencies (installed via pip install -t)
+lambda/**/bin/
+lambda/**/certifi/
+lambda/**/certifi-*.dist-info/
+lambda/**/charset_normalizer/
+lambda/**/charset_normalizer-*.dist-info/
+lambda/**/idna/
+lambda/**/idna-*.dist-info/
+lambda/**/requests/
+lambda/**/requests-*.dist-info/
+lambda/**/urllib3/
+lambda/**/urllib3-*.dist-info/
+lambda/**/bundle.sh
+
+# Python
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets (DO NOT COMMIT)
+*.pem
+*.key
+.env
+secrets.json
+**/secrets.json
+
+# Data files with PII (DO NOT COMMIT)
+*.xlsx
+*.xls
+*.csv
+**/data/
+phone/files/*.xlsx
+phone/files/*.xls
+phone/files/*.csv
+
+# Web UI
+web-ui/node_modules/
+web-ui/build/
+web-ui/dist/
+web-ui/.env.local
+web-ui/.env.production.local
+
+# Old phone UI (keeping for reference but not deploying)
+phone/node_modules/
+phone/build/
+
+# Keep only the Lambda code from phone/files
+phone/src/
+phone/public/
+phone/package-lock.json
+phone/backend/
+phone/.gitignore
+phone/README.md
+phone/package.json
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# AWS
+.aws-sam/
+samconfig.toml
+
+# CDK outputs and temp files
+cdk/outputs.json
+cdk/response*.json
+response*.json
+payload.json
+bedrock-kb-export.yaml
+cdk - Copy/
