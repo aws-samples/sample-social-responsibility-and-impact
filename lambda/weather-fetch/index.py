@@ -89,7 +89,8 @@ def lambda_handler(event, context):
 
         # Rate limiting: Tomorrow.io free tier allows 500 calls/day
         # Sleep prevents hitting rate limits when processing multiple locations
-        time.sleep(0.5)
+        # NOTE: If SMS sending to Africa's Talking fails due to rate limits, uncomment the line below
+        # time.sleep(0.5)  # nosemgrep: arbitrary-sleep
 
     return {
         "statusCode": 200,
