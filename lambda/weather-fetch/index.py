@@ -87,7 +87,8 @@ def lambda_handler(event, context):
             print(f"[WeatherFetchFn] Severe event at {lat},{lon}: {max_temp}°C")
             processed += 1
 
-        # Respect API rate limits (500 calls/day free tier)
+        # Rate limiting: Tomorrow.io free tier allows 500 calls/day
+        # Sleep prevents hitting rate limits when processing multiple locations
         time.sleep(0.5)
 
     return {

@@ -36,7 +36,7 @@ def load_excel_to_dynamodb(s3_bucket, s3_key, table_name):
     # Check if we're resuming from a previous run
     if os.path.exists(progress_file):
         try:
-            with open(progress_file, 'r') as f:
+            with open(progress_file, 'r', encoding='utf-8') as f:
                 progress = json.load(f)
                 start_index = progress.get('last_index', 0) + 1
                 print(f"Resuming from row {start_index}...")
@@ -116,7 +116,7 @@ def load_excel_to_dynamodb(s3_bucket, s3_key, table_name):
             # Save progress every 100 records
             if success_count % 100 == 0:
                 print(f"Loaded {success_count} records... (total: {start_index + success_count}/{total_records})")
-                with open(progress_file, 'w') as f:
+                with open(progress_file, 'w', encoding='utf-8') as f:
                     json.dump({'last_index': index, 'success_count': success_count}, f)
                 
         except Exception as e:
@@ -125,7 +125,7 @@ def load_excel_to_dynamodb(s3_bucket, s3_key, table_name):
             
             # Save progress even on errors
             if (success_count + error_count) % 100 == 0:
-                with open(progress_file, 'w') as f:
+                with open(progress_file, 'w', encoding='utf-8') as f:
                     json.dump({'last_index': index, 'success_count': success_count}, f)
     
     print(f"\nComplete!")
