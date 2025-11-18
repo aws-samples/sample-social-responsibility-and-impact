@@ -1,0 +1,4 @@
+# Suppress package version warnings - we use package-lock.json for version pinning
+# Rule: package-dependencies-check
+web-ui/package.json:package-dependencies-check
+cdk/package.json:package-dependencies-check
