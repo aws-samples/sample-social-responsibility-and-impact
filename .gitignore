@@ -71,6 +71,8 @@ secrets.json
 *.xlsx
 *.xls
 *.csv
+*.docx
+*.doc
 **/data/
 phone/files/*.xlsx
 phone/files/*.xls
