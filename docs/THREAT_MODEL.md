@@ -32,7 +32,7 @@ The Serverless Weather Alert System is an event-driven application that:
 
 
 **Backend Services:**
-- 5 Lambda functions (Python 3.12)
+- 5 Lambda functions (Python 3.14)
 - Amazon DynamoDB (recipient data)
 - Amazon SQS (3 queues + 3 DLQs)
 - Amazon EventBridge (scheduled triggers)
@@ -561,7 +561,7 @@ Using AWS data type definitions:
 **Affected Components:** All Lambda functions  
 
 **Mitigations:**
-- ✅ **Implemented:** AWS-managed Lambda runtime (Python 3.12)
+- ✅ **Implemented:** AWS-managed Lambda runtime (Python 3.14 - latest stable release)
 - ✅ **Implemented:** Regular runtime updates
 - ✅ **Implemented:** No custom runtime layers
 - ✅ **Implemented:** Minimal dependencies

@@ -130,7 +130,7 @@ This system can be adapted for any industry where weather conditions trigger per
 - AWS Account with appropriate permissions
 - AWS CLI v2 configured
 - Node.js 18+ and npm
-- Python 3.12+
+- Python 3.14+
 - Weather API key (Tomorrow.io recommended - [Get free key](https://www.tomorrow.io/weather-api/))
 - Amazon Bedrock access (Claude 3 Sonnet model enabled)
 

@@ -7,7 +7,7 @@ Get the Serverless Weather Alert System running in 30 minutes.
 - AWS Account with appropriate permissions
 - AWS CLI v2 configured
 - Node.js 18+ and npm
-- Python 3.12+
+- Python 3.14+
 - Weather API key ([Get free key](https://www.tomorrow.io/weather-api/))
 
 ## Step 1: Set Your Region

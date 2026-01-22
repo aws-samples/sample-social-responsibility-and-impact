@@ -158,7 +158,10 @@ queue.addToResourcePolicy(new iam.PolicyStatement({
 - Bedrock: `bedrock:InvokeModel` requires wildcards for model versioning
 
 #### Lambda Runtime Version (AwsSolutions-L1)
-**Reason:** Using Python 3.12 which is current and supported. Warning suggests checking for newer versions, but 3.12 is appropriate for this sample.
+**Status:** ✅ **RESOLVED**  
+**Action Taken:** Updated all Lambda functions to Python 3.14, the latest stable release available in AWS Lambda (released January 2025). This eliminates the CDK Nag finding and ensures we're using the most current, secure, and supported runtime version.
+
+**Reference:** [Python 3.14 runtime now available in AWS Lambda](https://aws.amazon.com/blogs/compute/python-3-14-runtime-now-available-in-aws-lambda/)
 
 #### AWS Managed Policies (AwsSolutions-IAM4)
 **Reason:** Using `AWSLambdaBasicExecutionRole` which is AWS best practice for Lambda CloudWatch logging. This is the recommended approach per AWS documentation.
@@ -195,14 +198,28 @@ queue.addToResourcePolicy(new iam.PolicyStatement({
 **Reason:** Using TLS 1.2 which is current AWS default and widely supported. TLS 1.3 not yet universally supported by all clients.
 
 #### CloudFront OAC vs OAI (AwsSolutions-CFR7)
-**Reason:** Using Origin Access Identity (OAI) which is still supported and simpler for sample projects. OAC is newer but adds complexity without significant benefit for this use case.
+**Status:** ✅ **RESOLVED**  
+**Action Taken:** Migrated from Origin Access Identity (OAI) to Origin Access Control (OAC), the recommended approach for CloudFront S3 origins. OAC provides:
+- Enhanced security with SigV4 signing
+- Better integration with S3 bucket policies
+- Support for SSE-KMS encrypted objects
+- AWS recommended best practice for new deployments
+
+**Reference:** [Amazon CloudFront Origin Access Control](https://docs.aws.amazon.com/AmazonCloudFront/latest/DeveloperGuide/private-content-restricting-access-to-s3.html)
 
 ---
 
 ### Monitoring Stack Suppressions
 
 #### SNS Topic SSL (AwsSolutions-SNS3)
-**Reason:** SNS topics don't support SSL enforcement at the topic level. SSL/TLS is enforced at the transport layer for all SNS communications. This is an internal alarm topic only.
+**Status:** ✅ **RESOLVED**  
+**Action Taken:** Implemented SSL enforcement on the SNS alarm topic using two mechanisms:
+1. Set `enforceSSL: true` on the SNS Topic construct
+2. Added explicit topic policy to deny non-SSL requests (defense in depth)
+
+The topic policy explicitly denies any `sns:Publish` action where `aws:SecureTransport` is `false`, ensuring all communications use SSL/TLS.
+
+**Reference:** [AWS SNS Security Best Practices](https://docs.aws.amazon.com/sns/latest/dg/sns-security-best-practices.html)
 
 ---
 
