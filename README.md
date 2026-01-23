@@ -217,7 +217,9 @@ EOF
 # BEDROCK_SYSTEM_PROMPT: "You are an agricultural advisor..."
 ```
 
-## 🔒 Security Features
+## 🔒 Security
+
+### Implemented Security Features
 
 - **No PII in Git**: Data files excluded via .gitignore, loaded from S3
 - **Secrets Management**: API keys stored in AWS Secrets Manager
@@ -225,8 +227,24 @@ EOF
 - **Authorization**: API Gateway with Cognito authorizer
 - **Encryption**: At rest (DynamoDB, S3, SQS) and in transit (TLS)
 - **Credential Masking**: Lambda logs mask sensitive values
-- **HTTPS Only**: CloudFront enforces HTTPS
-- **Least Privilege**: IAM roles follow principle of least privilege
+- **HTTPS Only**: CloudFront enforces HTTPS with TLS 1.2+
+- **Origin Access Control**: CloudFront uses OAC for secure S3 access
+- **SSL Enforcement**: SNS topics enforce SSL for all communications
+
+### Production Security Considerations
+
+> ⚠️ **Important**: This solution is intended to serve as a sample/reference architecture. Production environments should implement additional security best practices based on your specific requirements.
+
+**Recommended enhancements for production:**
+
+- **Cognito Advanced Security**: Enable Advanced Security Mode (requires Cognito Plus plan) for adaptive authentication and compromised credential detection
+- **WAF Integration**: Add AWS WAF to CloudFront and API Gateway for protection against common web exploits
+- **VPC Deployment**: Deploy Lambda functions in a VPC with private subnets for network isolation
+- **Custom Domain with ACM**: Use custom domain names with AWS Certificate Manager certificates
+- **Access Logging**: Enable CloudFront and API Gateway access logging for audit trails
+- **KMS Encryption**: Use customer-managed KMS keys for enhanced encryption control
+
+For comprehensive security guidance, refer to the [Security Pillar of the AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html).
 
 ## 📊 Monitoring
 

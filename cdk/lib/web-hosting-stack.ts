@@ -1,6 +1,6 @@
 import * as cdk from 'aws-cdk-lib';
 import * as s3 from 'aws-cdk-lib/aws-s3';
-import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment';
+// import * as s3deploy from 'aws-cdk-lib/aws-s3-deployment'; // Uncomment when deploying web UI
 import * as cloudfront from 'aws-cdk-lib/aws-cloudfront';
 import * as origins from 'aws-cdk-lib/aws-cloudfront-origins';
 import * as cognito from 'aws-cdk-lib/aws-cognito';
@@ -8,7 +8,6 @@ import * as iam from 'aws-cdk-lib/aws-iam';
 import * as sqs from 'aws-cdk-lib/aws-sqs';
 import * as apigateway from 'aws-cdk-lib/aws-apigateway';
 import * as lambda from 'aws-cdk-lib/aws-lambda';
-import * as logs from 'aws-cdk-lib/aws-logs';
 import { Construct } from 'constructs';
 import { NagSuppressions } from 'cdk-nag';
 
@@ -300,35 +299,45 @@ export class WeatherAlertWebHostingStack extends cdk.Stack {
     });
 
     // CDK Nag Suppressions
+    // ============================================
+    // SECURITY NOTE: This solution is intended as a sample/reference architecture.
+    // Production deployments should implement additional security best practices.
+    // Refer to the Security Pillar of the AWS Well-Architected Framework:
+    // https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html
+    // ============================================
     this.addNagSuppressions(api, sqsPollerFn);
   }
 
   private addNagSuppressions(api: apigateway.RestApi, sqsPollerFn: lambda.Function) {
-    // Suppress Cognito Advanced Security Mode - requires Plus plan
+    // ============================================
+    // Cognito Suppressions
+    // Production recommendation: Upgrade to Cognito Plus plan for Advanced Security Mode
+    // ============================================
     NagSuppressions.addResourceSuppressions(
       this.userPool,
       [
         {
           id: 'AwsSolutions-COG3',
-          reason: 'Advanced Security Mode requires Cognito Plus plan. For production deployments, customers should upgrade to enable advanced security features.',
+          reason: 'Sample project: Advanced Security Mode requires Cognito Plus plan. Production deployments should enable for adaptive authentication.',
         },
       ]
     );
 
-    // Suppress Cognito SMS role wildcard - required by Cognito for MFA
     NagSuppressions.addResourceSuppressionsByPath(
       this,
       `${this.stackName}/WeatherAlertUserPool/smsRole/Resource`,
       [
         {
           id: 'AwsSolutions-IAM5',
-          reason: 'Wildcard permission required by Cognito for SMS MFA functionality. This is AWS Cognito managed behavior.',
+          reason: 'Wildcard permission required by Cognito for SMS MFA functionality. This is AWS-managed behavior.',
           appliesTo: ['Resource::*'],
         },
       ]
     );
 
-    // Suppress Lambda function warnings
+    // ============================================
+    // Lambda Suppressions
+    // ============================================
     NagSuppressions.addResourceSuppressions(
       sqsPollerFn,
       [
@@ -337,45 +346,47 @@ export class WeatherAlertWebHostingStack extends cdk.Stack {
           reason: 'AWSLambdaBasicExecutionRole is AWS managed policy for Lambda execution. Required for CloudWatch Logs access.',
           appliesTo: ['Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
         },
-        {
-          id: 'AwsSolutions-L1',
-          reason: 'Python 3.12 is the latest stable runtime. This warning is a false positive.',
-        },
       ],
       true
     );
 
-    // Suppress API Gateway warnings
+    // ============================================
+    // API Gateway Suppressions
+    // Production recommendation: Enable CloudWatch Logs and request validation
+    // ============================================
     NagSuppressions.addResourceSuppressions(
       api,
       [
         {
           id: 'AwsSolutions-APIG2',
-          reason: 'Request validation handled by Lambda function. Input validation implemented in application code.',
+          reason: 'Sample project: Request validation handled by Lambda function. Production should add API Gateway validation.',
         },
         {
           id: 'AwsSolutions-APIG1',
-          reason: 'Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.',
+          reason: 'Sample project: Access logging disabled to reduce costs. Production should enable CloudWatch Logs.',
         },
         {
           id: 'AwsSolutions-APIG6',
-          reason: 'CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.',
+          reason: 'Sample project: CloudWatch logging disabled to reduce costs. Production should enable for monitoring.',
         },
       ],
       true
     );
 
-    // Suppress CloudFront warnings
+    // ============================================
+    // CloudFront Suppressions
+    // Production recommendation: Enable access logging and use custom TLS certificate
+    // ============================================
     NagSuppressions.addResourceSuppressions(
       this.distribution,
       [
         {
           id: 'AwsSolutions-CFR3',
-          reason: 'CloudFront access logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.',
+          reason: 'Sample project: Access logging disabled to reduce costs. Production should enable for audit trails.',
         },
         {
           id: 'AwsSolutions-CFR4',
-          reason: 'Using default CloudFront certificate for simplicity in AWS Sample. Customers should use custom certificate with TLS 1.2+ in production.',
+          reason: 'Sample project: Using default CloudFront certificate. Production should use custom certificate with ACM.',
         },
       ]
     );

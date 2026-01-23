@@ -219,11 +219,20 @@ export class WeatherAlertComputeStack extends cdk.Stack {
     });
 
     // CDK Nag Suppressions
+    // ============================================
+    // SECURITY NOTE: This solution is intended as a sample/reference architecture.
+    // Production deployments should implement additional security best practices.
+    // Refer to the Security Pillar of the AWS Well-Architected Framework:
+    // https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html
+    // ============================================
     this.addNagSuppressions();
   }
 
   private addNagSuppressions() {
-    // Suppress AWS managed policy warnings - AWSLambdaBasicExecutionRole is standard for Lambda
+    // ============================================
+    // Lambda Suppressions
+    // Production recommendation: Consider VPC deployment and custom IAM policies
+    // ============================================
     const lambdaFunctions = [
       this.profilesToLocationsFn,
       this.weatherFetchFn,
@@ -240,22 +249,21 @@ export class WeatherAlertComputeStack extends cdk.Stack {
             reason: 'AWSLambdaBasicExecutionRole is AWS managed policy for Lambda execution. Required for CloudWatch Logs access.',
             appliesTo: ['Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole'],
           },
-          {
-            id: 'AwsSolutions-L1',
-            reason: 'Python 3.12 is the latest stable runtime. This warning is a false positive.',
-          },
         ],
         true // Apply to children (role, policy)
       );
 
-      // Suppress wildcard permissions where necessary
+      // ============================================
+      // IAM Wildcard Suppressions
+      // Production recommendation: Scope permissions to specific resources where possible
+      // ============================================
       NagSuppressions.addResourceSuppressionsByPath(
         this,
         `${this.stackName}/${fn.node.id}/ServiceRole/DefaultPolicy/Resource`,
         [
           {
             id: 'AwsSolutions-IAM5',
-            reason: 'Wildcard permissions required for CloudWatch Logs (log stream creation), DynamoDB queries, and Bedrock Knowledge Base access. Scoped to specific resources where possible.',
+            reason: 'Sample project: Wildcard permissions required for CloudWatch Logs (log stream creation), DynamoDB queries, and Bedrock Knowledge Base access. Production should scope to specific resources.',
             appliesTo: [
               'Resource::*',
               'Action::logs:CreateLogStream',
@@ -267,7 +275,10 @@ export class WeatherAlertComputeStack extends cdk.Stack {
       );
     });
 
-    // Suppress log retention Lambda (created by CDK)
+    // ============================================
+    // CDK-Generated Resource Suppressions
+    // These are standard CDK behaviors that cannot be modified
+    // ============================================
     NagSuppressions.addResourceSuppressionsByPath(
       this,
       `${this.stackName}/LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/ServiceRole/Resource`,
