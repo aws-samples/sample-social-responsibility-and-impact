@@ -49,7 +49,7 @@ def lambda_handler(event, context):
             response.raise_for_status()
             data = response.json()
         except Exception as e:
-            print(f"[WeatherFetchFn] Failed to fetch weather for {lat},{lon}: {e}")
+            print(f"[WeatherFetchFn] Failed to fetch weather: {type(e).__name__}")
             continue
 
         try:
@@ -84,7 +84,7 @@ def lambda_handler(event, context):
                 MessageBody=json.dumps(result_msg)
             )
             
-            print(f"[WeatherFetchFn] Severe event at {lat},{lon}: {max_temp}°C")
+            print(f"[WeatherFetchFn] Weather event at location: {max_temp}°C")
             processed += 1
 
         # Rate limiting: Tomorrow.io free tier allows 500 calls/day

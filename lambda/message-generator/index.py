@@ -164,7 +164,7 @@ def lambda_handler(event, context):
             MessageBody=json.dumps(output)
         )
         
-        print(f"[MessageGeneratorFn] Message generated for {output['contact_uuid']}: {advice[:80]}...")
+        print(f"[MessageGeneratorFn] Message generated for contact, advice length: {len(advice)} chars")
         processed += 1
     
     return {
