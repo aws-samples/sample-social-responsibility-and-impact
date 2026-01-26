@@ -15,7 +15,7 @@ This deployment follows AWS Well-Architected Framework principles:
 - AWS Account with appropriate permissions
 - AWS CLI v2 configured
 - Node.js 18+ and npm
-- Python 3.12+
+- Python 3.14+
 - Git
 
 ### API Keys

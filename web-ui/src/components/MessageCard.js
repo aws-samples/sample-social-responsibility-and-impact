@@ -39,6 +39,7 @@ function MessageCard({ message }) {
       </div>
 
       <div className="card-footer">
+        {/* nosemgrep: jsx-not-internationalized */}
         <button className="view-map-btn" onClick={() => {
           window.open(`https://www.google.com/maps?q=${latitude},${longitude}`, '_blank');
         }}>

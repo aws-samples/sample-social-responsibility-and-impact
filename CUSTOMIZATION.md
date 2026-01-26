@@ -680,8 +680,8 @@ Before deploying your customized system:
 
 - **USE_CASES.md**: Detailed industry examples
 - **ARCHITECTURE.md**: System design and components
-- **DEPLOYMENT.md**: Step-by-step deployment guide
-- **CODE_CHANGES_CHECKLIST.md**: File-by-file modification guide
+- **DEPLOYMENT_GUIDE.md**: Step-by-step deployment guide
+- **QUICK_START.md**: Quick 30-minute deployment guide
 
 ---
 

@@ -7,7 +7,7 @@ This directory contains scripts to load recipient data into DynamoDB from files 
 ## Prerequisites
 
 - AWS CLI configured with appropriate credentials
-- Python 3.12+
+- Python 3.14+
 - Required Python packages (install with `pip install -r requirements.txt`)
 
 ## Loading Data from S3

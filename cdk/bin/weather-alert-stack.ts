@@ -1,12 +1,16 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
+import { AwsSolutionsChecks } from 'cdk-nag';
 import { WeatherAlertDataStack } from '../lib/data-stack';
 import { WeatherAlertComputeStack } from '../lib/compute-stack';
 import { WeatherAlertMonitoringStack } from '../lib/monitoring-stack';
 import { WeatherAlertWebHostingStack } from '../lib/web-hosting-stack';
 
 const app = new cdk.App();
+
+// Add CDK Nag checks for AWS Solutions best practices
+cdk.Aspects.of(app).add(new AwsSolutionsChecks({ verbose: true }));
 
 // Environment configuration
 // Uses the region from AWS CLI configuration or CDK_DEFAULT_REGION environment variable

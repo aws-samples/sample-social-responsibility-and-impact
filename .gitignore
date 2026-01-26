@@ -39,7 +39,8 @@ dist/
 downloads/
 eggs/
 .eggs/
-lib/
+# Python lib folders (but not cdk/lib)
+/lib/
 lib64/
 parts/
 sdist/
@@ -71,10 +72,18 @@ secrets.json
 *.xlsx
 *.xls
 *.csv
+*.docx
+*.doc
+*.html
 **/data/
 phone/files/*.xlsx
 phone/files/*.xls
 phone/files/*.csv
+
+# Security review documents (DO NOT COMMIT)
+docs/cdk_nag_findings.html
+docs/*Remediation*.docx
+docs/*remediation*.docx
 
 # Web UI
 web-ui/node_modules/

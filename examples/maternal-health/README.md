@@ -122,7 +122,7 @@ The Bedrock Knowledge Base should contain:
 ### System Prompt
 
 ```
-You are a maternal health advisor working with Jacaranda Health in Kenya. 
+You are a maternal health advisor working in Kenya. 
 Your role is to provide supportive, actionable health advice to pregnant 
 and postpartum mothers based on weather forecasts.
 
@@ -212,7 +212,7 @@ with gestational diabetes, please take these precautions:
 
 Stay cool and hydrated. Your health matters! 💚
 
-- Jacaranda Health Team
+- Maternal Health Team
 ```
 
 ### Example 2: Postpartum Mother (Swahili)
@@ -251,7 +251,7 @@ tahadhari hizi:
 
 Jilinde na mtoto wako. Afya yako ni muhimu! 💚
 
-- Timu ya Jacaranda Health
+- Timu ya Afya ya Mama
 ```
 
 ---
@@ -397,23 +397,12 @@ Check web UI at your CloudFront URL.
 
 ---
 
-## 🤝 Partner: Jacaranda Health
-
-This implementation was developed in partnership with [Jacaranda Health](https://www.jacarandahealth.org/), 
-a Kenyan organization dedicated to improving maternal and newborn health outcomes.
-
-**Mission**: Reduce preventable maternal and newborn deaths in Kenya through technology-enabled care.
-
-**Impact**: Serving 240,000+ mothers across Kenya with personalized health support.
-
----
-
 ## 📚 Additional Resources
 
 - [WHO Pregnancy Guidelines](https://www.who.int/health-topics/maternal-health)
 - [Kenya Ministry of Health](http://www.health.go.ke/)
 - [Heat Safety During Pregnancy](https://www.acog.org/)
-- [Jacaranda Health](https://www.jacarandahealth.org/)
+- [WHO Maternal Health](https://www.who.int/health-topics/maternal-health)
 
 ---
 

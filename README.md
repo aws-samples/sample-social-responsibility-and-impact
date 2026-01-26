@@ -88,7 +88,7 @@ NotifyQueue SQS → API Gateway (Cognito) → CloudFront Web UI
     ├── USE_CASES.md              # Industry examples
     ├── CUSTOMIZATION.md          # Adaptation guide
     ├── ARCHITECTURE.md           # System design
-    └── DEPLOYMENT.md             # Deployment instructions
+    └── DEPLOYMENT_GUIDE.md       # Deployment instructions
 ```
 
 ## 🎯 Use Cases
@@ -130,7 +130,7 @@ This system can be adapted for any industry where weather conditions trigger per
 - AWS Account with appropriate permissions
 - AWS CLI v2 configured
 - Node.js 18+ and npm
-- Python 3.12+
+- Python 3.14+
 - Weather API key (Tomorrow.io recommended - [Get free key](https://www.tomorrow.io/weather-api/))
 - Amazon Bedrock access (Claude 3 Sonnet model enabled)
 
@@ -187,7 +187,7 @@ npm run build
 aws s3 sync build/ s3://<YOUR_WEB_BUCKET>/ --delete
 ```
 
-**See [DEPLOYMENT.md](DEPLOYMENT.md) for detailed step-by-step instructions.**
+**See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md) for detailed step-by-step instructions.**
 
 ## 🎨 Customization
 
@@ -217,7 +217,9 @@ EOF
 # BEDROCK_SYSTEM_PROMPT: "You are an agricultural advisor..."
 ```
 
-## 🔒 Security Features
+## 🔒 Security
+
+### Implemented Security Features
 
 - **No PII in Git**: Data files excluded via .gitignore, loaded from S3
 - **Secrets Management**: API keys stored in AWS Secrets Manager
@@ -225,8 +227,24 @@ EOF
 - **Authorization**: API Gateway with Cognito authorizer
 - **Encryption**: At rest (DynamoDB, S3, SQS) and in transit (TLS)
 - **Credential Masking**: Lambda logs mask sensitive values
-- **HTTPS Only**: CloudFront enforces HTTPS
-- **Least Privilege**: IAM roles follow principle of least privilege
+- **HTTPS Only**: CloudFront enforces HTTPS with TLS 1.2+
+- **Origin Access Control**: CloudFront uses OAC for secure S3 access
+- **SSL Enforcement**: SNS topics enforce SSL for all communications
+
+### Production Security Considerations
+
+> ⚠️ **Important**: This solution is intended to serve as a sample/reference architecture. Production environments should implement additional security best practices based on your specific requirements.
+
+**Recommended enhancements for production:**
+
+- **Cognito Advanced Security**: Enable Advanced Security Mode (requires Cognito Plus plan) for adaptive authentication and compromised credential detection
+- **WAF Integration**: Add AWS WAF to CloudFront and API Gateway for protection against common web exploits
+- **VPC Deployment**: Deploy Lambda functions in a VPC with private subnets for network isolation
+- **Custom Domain with ACM**: Use custom domain names with AWS Certificate Manager certificates
+- **Access Logging**: Enable CloudFront and API Gateway access logging for audit trails
+- **KMS Encryption**: Use customer-managed KMS keys for enhanced encryption control
+
+For comprehensive security guidance, refer to the [Security Pillar of the AWS Well-Architected Framework](https://docs.aws.amazon.com/wellarchitected/latest/security-pillar/welcome.html).
 
 ## 📊 Monitoring
 
@@ -317,8 +335,8 @@ DEMO_MODE = True  # Processes all weather conditions, not just threshold exceeda
 - **[USE_CASES.md](USE_CASES.md)** - Industry examples with sample data and prompts
 - **[CUSTOMIZATION.md](CUSTOMIZATION.md)** - Complete guide to adapting for your industry
 - **[ARCHITECTURE.md](ARCHITECTURE.md)** - System design, patterns, and decisions
-- **[DEPLOYMENT.md](DEPLOYMENT.md)** - Step-by-step deployment instructions
-- **[AWS_SAMPLES_COMPLIANCE_REPORT.md](AWS_SAMPLES_COMPLIANCE_REPORT.md)** - Security and compliance details
+- **[DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)** - Step-by-step deployment instructions
+- **[USE_CASES.md](USE_CASES.md)** - Industry examples and use cases
 
 ## 🎓 What You'll Learn
 
@@ -364,11 +382,11 @@ This project is licensed under the MIT-0 License. See [LICENSE](LICENSE) file.
 
 ### Troubleshooting
 
-- **Deployment issues**: See [DEPLOYMENT.md](DEPLOYMENT.md)
+- **Deployment issues**: See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)
 - **Customization questions**: See [CUSTOMIZATION.md](CUSTOMIZATION.md)
 - **Lambda errors**: Check CloudWatch Logs
 - **Failed messages**: Check SQS Dead Letter Queues
-- **Security questions**: See [AWS_SAMPLES_COMPLIANCE_REPORT.md](AWS_SAMPLES_COMPLIANCE_REPORT.md)
+- **Architecture questions**: See [ARCHITECTURE.md](ARCHITECTURE.md)
 
 ### Getting Help
 

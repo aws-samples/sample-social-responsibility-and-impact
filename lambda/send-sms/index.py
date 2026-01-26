@@ -26,9 +26,10 @@ def send_sms(phone, message):
     print(f"AT_SENDER_ID: {AT_SENDER_ID}")
     
     try:
-        response = requests.post(url, data=payload, headers=headers)
-        print(f"Africa's Talking API Raw Response: {response.text}")
+        # Timeout set to 30 seconds to prevent Lambda from hanging if API is unresponsive
+        response = requests.post(url, data=payload, headers=headers, timeout=30)
         response.raise_for_status()
+        print(f"Africa's Talking API Raw Response: {response.text}")
         json_resp = response.json()
         print(f"Africa's Talking Response as JSON: {json_resp}")
         return json_resp
