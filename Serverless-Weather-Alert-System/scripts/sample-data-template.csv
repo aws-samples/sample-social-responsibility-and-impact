@@ -1,6 +1,0 @@
-contact_uuid,language,status,anc_pnc_value,facility_code,medical_conditions,edd,delivery_date,facility_name,latitude,longitude
-8115f2ad-a3e5-4b05-8190-48fd933f286b,SWH,active,PNC,11499.0,"anemia,",2025-06-26T17:25:16.797983+03:00,,Kongowea Health Centre,39.683949,-4.041399
-d788ec47-c05a-4bf5-a8d5-897774d9d581,swh,active,PNC,21539.0,"anemia,",,2025-01-03T11:56:53.532092+03:00,Konjora Dispensary,39.807588,-3.58105101
-dfddb35d-87ee-4685-8b0c-dbe94554f895,ENG,active,ANC,12879.0,"miscarriage,",2025-08-27T11:48:09.550270+03:00,,Bahati Health Centre,36.86299,-1.28891
-47eedb41-0cd3-45e7-a7e0-00a33ca09b81,swh,active,PNC,14139.0,"currentlypregnantwithmultiples, null",,2025-06-11T17:33:17.938571+03:00,Tabaka Mission Hospital,34.6665,-0.74452
-d25d784a-8d31-4584-a4fa-32ee48d8ad4a,ENG,active,PNC,15288.0,"currenthypertension,null",2025-11-25T20:36:30.618014+03:00,,Nakuru Provincial General Hospital,36.0680815,-0.2772125
