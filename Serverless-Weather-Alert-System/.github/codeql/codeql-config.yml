@@ -1,0 +1,20 @@
+name: "CodeQL Config"
+
+# Exclude third-party library code that we don't control
+paths-ignore:
+  - '**/requests/auth.py'
+  - '**/urllib3/**'
+  - '**/certifi/**'
+  - '**/charset_normalizer/**'
+  - '**/idna/**'
+  - '**/boto3/**'
+  - '**/botocore/**'
+  - '**/jmespath/**'
+  - '**/dateutil/**'
+  - '**/s3transfer/**'
+
+# Only scan our application code
+paths:
+  - 'lambda/**/index.py'
+  - 'cdk/**/*.ts'
+  - 'web-ui/src/**/*.js'
