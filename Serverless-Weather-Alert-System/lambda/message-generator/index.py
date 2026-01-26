@@ -164,7 +164,7 @@ def lambda_handler(event, context):
             MessageBody=json.dumps(output)
         )
         
-        print(f"[MessageGeneratorFn] Message generated for contact, advice length: {len(advice)} chars")
+        print(f"[MessageGeneratorFn] Message generated successfully (length: {len(advice)} chars)")
         processed += 1
     
     return {

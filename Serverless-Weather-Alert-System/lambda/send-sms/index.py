@@ -1,19 +1,28 @@
 import os
 import requests
 import json
-import logging
-
-# Configure logging
-logger = logging.getLogger()
-logger.setLevel(logging.INFO)
+import ssl
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
 
 # ENVIRONMENT VARIABLES (set by CDK)
 AT_API_KEY = os.environ.get('AT_API_KEY', '')
 AT_USERNAME = os.environ.get('AT_USERNAME', '')
 AT_SENDER_ID = os.environ.get('AT_SENDER_ID', 'WeatherAlert')
 
+# Create a custom SSL context that enforces TLS 1.2+
+class TLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = create_urllib3_context()
+        ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+        kwargs['ssl_context'] = ctx
+        return super().init_poolmanager(*args, **kwargs)
 
-def send_sms_request(recipient, content):
+# Create a session with secure TLS configuration
+session = requests.Session()
+session.mount('https://', TLSAdapter())
+
+def send_sms(phone, message):
     """Send SMS via Africa's Talking API."""
     url = "https://api.africastalking.com/version1/messaging"
     headers = {
@@ -22,65 +31,59 @@ def send_sms_request(recipient, content):
     }
     payload = {
         "username": AT_USERNAME,
-        "to": recipient,
-        "message": content,
+        "to": phone,
+        "message": message,
         "from": AT_SENDER_ID
     }
-    
-    logger.info("Attempting to send SMS")
-    logger.info("AT_API_KEY: %s", "SET" if AT_API_KEY else "NOT SET")
-    logger.info("AT_USERNAME: %s", "SET" if AT_USERNAME else "NOT SET")
-    logger.info("AT_SENDER_ID: %s", AT_SENDER_ID)
+    print(f"Attempting to send SMS to {phone[:4]}****. Message length: {len(message)} chars")
+    print(f"AT_API_KEY: {'SET' if AT_API_KEY else 'NOT SET'}")
+    print(f"AT_USERNAME: {'SET' if AT_USERNAME else 'NOT SET'}")
+    print(f"AT_SENDER_ID: {AT_SENDER_ID}")
     
     try:
-        response = requests.post(url, data=payload, headers=headers, timeout=30)
+        # Timeout set to 30 seconds to prevent Lambda from hanging if API is unresponsive
+        response = session.post(url, data=payload, headers=headers, timeout=30)
         response.raise_for_status()
+        
         json_resp = response.json()
-        status = json_resp.get('SMSMessageData', {}).get('Message', 'Unknown status')
-        logger.info("SMS API response status: %s", status)
-        return {"success": True}
-    except requests.exceptions.RequestException:
-        logger.error("SMS request failed")
-        return {"success": False}
-
+        # Log only status, not full response which may contain sensitive data
+        status = json_resp.get('SMSMessageData', {}).get('Recipients', [{}])[0].get('status', 'unknown')
+        print(f"Africa's Talking Response Status: {status}")
+        return json_resp
+    except Exception as e:
+        print(f"Exception sending SMS via Africa's Talking: {e}")
+        return {"error": str(e)}
 
 def lambda_handler(event, context):
     """
     Process messages from NotifyQueue and send SMS.
     """
     processed = 0
-    failed = 0
     
     for record in event.get('Records', []):
         try:
             msg = json.loads(record['body'])
-            recipient = msg.get('phone_number')
-            content = msg.get('advice')
+            phone = msg.get('phone_number')
+            advice = msg.get('advice')
             
-            if not recipient or not content:
-                logger.warning("Missing required fields in message")
-                failed += 1
+            if not phone or not advice:
+                print(f"Missing phone or advice in message: {msg}")
                 continue
             
-            logger.info("[SendAdviceSMSFn] Processing SMS request")
-            result = send_sms_request(recipient, content)
+            print(f"[SendAdviceSMSFn] Sending to {phone[:4]}****")
+            result = send_sms(phone, advice)
             
-            if result.get("success"):
+            if 'error' not in result:
                 processed += 1
-                logger.info("[SendAdviceSMSFn] SMS sent successfully")
+                print(f"[SendAdviceSMSFn] Successfully sent to {phone[:4]}****")
             else:
-                failed += 1
-                logger.error("[SendAdviceSMSFn] SMS send failed")
+                print(f"[SendAdviceSMSFn] Failed to send to {phone[:4]}****: {result['error']}")
                 
-        except json.JSONDecodeError:
-            logger.error("[SendAdviceSMSFn] Invalid JSON in record")
-            failed += 1
-        except Exception:
-            logger.error("[SendAdviceSMSFn] Error processing record")
-            failed += 1
+        except Exception as e:
+            print(f"[SendAdviceSMSFn] Error processing record: {e}")
+            continue
     
     return {
         "statusCode": 200,
-        "processed": processed,
-        "failed": failed
+        "processed": processed
     }

@@ -23,7 +23,22 @@ lambda/**/requests/
 lambda/**/requests-*.dist-info/
 lambda/**/urllib3/
 lambda/**/urllib3-*.dist-info/
+lambda/**/boto3/
+lambda/**/boto3-*.dist-info/
+lambda/**/botocore/
+lambda/**/botocore-*.dist-info/
+lambda/**/jmespath/
+lambda/**/jmespath-*.dist-info/
+lambda/**/dateutil/
+lambda/**/python_dateutil-*.dist-info/
+lambda/**/s3transfer/
+lambda/**/s3transfer-*.dist-info/
+lambda/**/six.py
+lambda/**/six-*.dist-info/
 lambda/**/bundle.sh
+
+# Exclude emscripten (WebAssembly) files not needed in Lambda
+lambda/**/emscripten/
 
 # Python
 *.py[cod]
@@ -84,6 +99,7 @@ phone/files/*.csv
 docs/cdk_nag_findings.html
 docs/*Remediation*.docx
 docs/*remediation*.docx
+SECURITY_FIXES.md
 
 # Web UI
 web-ui/node_modules/
@@ -122,4 +138,3 @@ response*.json
 payload.json
 bedrock-kb-export.yaml
 cdk - Copy/
-sample-*

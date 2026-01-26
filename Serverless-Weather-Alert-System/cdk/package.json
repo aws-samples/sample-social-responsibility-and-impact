@@ -31,5 +31,9 @@
   "dependencies": {
     "aws-cdk-lib": "^2.223.0",
     "constructs": "^10.0.0"
+  },
+  "overrides": {
+    "js-yaml": "^4.1.0",
+    "diff": "^5.0.0"
   }
 }

@@ -16,9 +16,7 @@ An industry-agnostic system that demonstrates serverless best practices, AI-powe
 - ✅ **Event-Driven Architecture**: Serverless design with SQS, Lambda, and EventBridge
 - ✅ **Cost-Optimized**: Location deduplication reduces API calls by 80% (~$47/month for 240K profiles)
 - ✅ **Complete Web UI**: React app with 3 views (Cards, Phone mockup, Interactive Map)
-- ✅ **Production-Ready**: Monitoring, alarms, DLQs, error handling, and retry logic
 - ✅ **Industry-Agnostic**: Easily adaptable for agriculture, construction, public safety, and more
-- ✅ **Proven at Scale**: Currently processing 240K+ profiles daily in production
 - ✅ **Free Map Integration**: OpenStreetMap (no API keys required)
 
 ## 🏗️ Architecture
@@ -97,7 +95,6 @@ This system can be adapted for any industry where weather conditions trigger per
 
 ### 🏥 Maternal Health (Included Implementation)
 **Scenario**: Pregnant women receive personalized health advice during extreme heat  
-**Status**: ✅ **Production** - Currently protecting 240K+ mothers in Kenya  
 **Threshold**: Temperature > 32°C  
 **Message**: Hydration tips, activity recommendations, when to seek care
 
@@ -254,6 +251,32 @@ For comprehensive security guidance, refer to the [Security Pillar of the AWS We
 - **X-Ray Tracing**: Distributed tracing across services
 - **DLQs**: Dead-letter queues for failed messages (3 retries)
 
+## 💰 Cost Estimate
+
+**Example**: 240K recipients with daily checks (~1,300 unique locations after deduplication)
+
+| Service | Monthly Cost | Notes |
+|---------|--------------|-------|
+| Lambda | $2.00 | ~3M invocations/month |
+| DynamoDB | $5.00 | On-demand pricing, 240K items |
+| SQS | Free | Within free tier |
+| Bedrock KB | $10.00 | Knowledge Base queries |
+| Bedrock Claude | $20.00 | ~1,300 messages/day |
+| Weather API | Free | Tomorrow.io free tier (500/day) |
+| CloudWatch | $5.00 | Logs and metrics |
+| CloudFront | $1.00 | Low traffic web UI |
+| Cognito | Free | < 50K MAU |
+| API Gateway | $3.50 | REST API calls |
+| **Total** | **~$47/month** | **Scales with usage** |
+
+**Cost Optimization Features**:
+- Location deduplication (80% API call reduction)
+- Serverless architecture (pay only for what you use)
+- Free tier usage where possible
+- Rate limiting to stay within quotas
+
+**Smaller deployments** (1K-10K recipients) will cost significantly less (~$10-20/month).
+
 ## 🎨 Web UI Features
 
 ### Three View Modes
@@ -320,7 +343,7 @@ This sample demonstrates:
 - **AI/ML Integration**: Amazon Bedrock with RAG (Retrieval Augmented Generation)
 - **Serverless Best Practices**: Concurrency controls, error handling, DLQs
 - **Cost Optimization**: Deduplication, rate limiting, efficient data access
-- **Production Readiness**: Monitoring, alarms, security, scalability
+- **Other Features**: Monitoring, alarms, security, scalability
 - **Full-Stack Development**: React UI, API Gateway, CloudFront, Cognito
 
 ## 🤝 Contributing

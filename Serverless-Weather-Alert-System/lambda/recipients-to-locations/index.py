@@ -86,7 +86,7 @@ def lambda_handler(event, context):
                 "lastAlertedDate": item.get("lastAlertedDate"),
             }
             
-            print(f"[RecipientsToLocationsFn] Queuing location: {loc_key}")
+            print(f"[RecipientsToLocationsFn] Queuing location for weather check")
             
             sqs.send_message(
                 QueueUrl=QUEUE_URL,

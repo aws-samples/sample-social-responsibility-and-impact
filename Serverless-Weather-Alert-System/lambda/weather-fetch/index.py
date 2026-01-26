@@ -3,6 +3,9 @@ import json
 import time
 import requests
 import boto3
+import ssl
+from requests.adapters import HTTPAdapter
+from urllib3.util.ssl_ import create_urllib3_context
 
 # Environment variables set by CDK
 TOMORROW_IO_API_KEY = os.environ['TOMORROW_IO_API_KEY']
@@ -17,6 +20,18 @@ sqs = boto3.client("sqs")
 
 # DEMO MODE: Set to False for production filtering
 DEMO_MODE = True  # Enabled for testing - processes all locations regardless of temperature
+
+# Create a custom SSL context that enforces TLS 1.2+
+class TLSAdapter(HTTPAdapter):
+    def init_poolmanager(self, *args, **kwargs):
+        ctx = create_urllib3_context()
+        ctx.minimum_version = ssl.TLSVersion.TLSv1_2
+        kwargs['ssl_context'] = ctx
+        return super().init_poolmanager(*args, **kwargs)
+
+# Create a session with secure TLS configuration
+session = requests.Session()
+session.mount('https://', TLSAdapter())
 
 def lambda_handler(event, context):
     """
@@ -39,17 +54,19 @@ def lambda_handler(event, context):
         today = msg.get("todayDate")
 
         # Build Tomorrow.io API call for daily forecast
+        # Note: API key is not logged for security
         url = (
             f"https://api.tomorrow.io/v4/weather/forecast?"
             f"location={lat},{lon}&apikey={TOMORROW_IO_API_KEY}&timesteps=1d"
         )
 
         try:
-            response = requests.get(url, timeout=10)
+            response = session.get(url, timeout=10)
             response.raise_for_status()
             data = response.json()
+            print(f"[WeatherFetchFn] Successfully fetched weather for location {lat},{lon}")
         except Exception as e:
-            print(f"[WeatherFetchFn] Failed to fetch weather: {type(e).__name__}")
+            print(f"[WeatherFetchFn] Failed to fetch weather for location: {e}")
             continue
 
         try:
@@ -84,7 +101,7 @@ def lambda_handler(event, context):
                 MessageBody=json.dumps(result_msg)
             )
             
-            print(f"[WeatherFetchFn] Weather event at location: {max_temp}°C")
+            print(f"[WeatherFetchFn] Severe event at location: {max_temp}°C")
             processed += 1
 
         # Rate limiting: Tomorrow.io free tier allows 500 calls/day
