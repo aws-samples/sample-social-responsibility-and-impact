@@ -1,0 +1,96 @@
+{
+  "version": "48.0.0",
+  "files": {
+    "a9ec1d8c6f6304c24cb3adadcac3f75b271be0f110b5d0f2f2f5e9b7cd32ee7d": {
+      "displayName": "RecipientsToLocationsFn/Code",
+      "source": {
+        "path": "asset.a9ec1d8c6f6304c24cb3adadcac3f75b271be0f110b5d0f2f2f5e9b7cd32ee7d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "423277768248-us-east-1-01b2eb3e": {
+          "bucketName": "cdk-hnb659fds-assets-423277768248-us-east-1",
+          "objectKey": "a9ec1d8c6f6304c24cb3adadcac3f75b271be0f110b5d0f2f2f5e9b7cd32ee7d.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::423277768248:role/cdk-hnb659fds-file-publishing-role-423277768248-us-east-1"
+        }
+      }
+    },
+    "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d": {
+      "displayName": "LogRetentionaae0aa3c5b4d4f87b02d85b201efdd8a/Code",
+      "source": {
+        "path": "asset.2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "423277768248-us-east-1-aba55c6f": {
+          "bucketName": "cdk-hnb659fds-assets-423277768248-us-east-1",
+          "objectKey": "2819175352ad1ce0dae768e83fc328fb70fb5f10b4a8ff0ccbcb791f02b0716d.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::423277768248:role/cdk-hnb659fds-file-publishing-role-423277768248-us-east-1"
+        }
+      }
+    },
+    "6ec75d72e9199829f40d6df4f4ed55f1acdb43b91d30fed2e015e1e4e52a3010": {
+      "displayName": "WeatherFetchFn/Code",
+      "source": {
+        "path": "asset.6ec75d72e9199829f40d6df4f4ed55f1acdb43b91d30fed2e015e1e4e52a3010",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "423277768248-us-east-1-fadfed55": {
+          "bucketName": "cdk-hnb659fds-assets-423277768248-us-east-1",
+          "objectKey": "6ec75d72e9199829f40d6df4f4ed55f1acdb43b91d30fed2e015e1e4e52a3010.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::423277768248:role/cdk-hnb659fds-file-publishing-role-423277768248-us-east-1"
+        }
+      }
+    },
+    "3b9a4816f57e16aa5f0a0bd044865b9282b6d5f918d86eb85bdd7a1cd3ce6f78": {
+      "displayName": "MessageGeneratorFn/Code",
+      "source": {
+        "path": "asset.3b9a4816f57e16aa5f0a0bd044865b9282b6d5f918d86eb85bdd7a1cd3ce6f78",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "423277768248-us-east-1-6cf36a0e": {
+          "bucketName": "cdk-hnb659fds-assets-423277768248-us-east-1",
+          "objectKey": "3b9a4816f57e16aa5f0a0bd044865b9282b6d5f918d86eb85bdd7a1cd3ce6f78.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::423277768248:role/cdk-hnb659fds-file-publishing-role-423277768248-us-east-1"
+        }
+      }
+    },
+    "bde8e9f2d8dd7006224be8cf3d7d7618dc1b66238ea28c82537d1f3b2ff1ace8": {
+      "displayName": "SendAdviceSMSFn/Code",
+      "source": {
+        "path": "asset.bde8e9f2d8dd7006224be8cf3d7d7618dc1b66238ea28c82537d1f3b2ff1ace8",
+        "packaging": "zip"
+      },
+      "destinations": {
+        "423277768248-us-east-1-c5df83d4": {
+          "bucketName": "cdk-hnb659fds-assets-423277768248-us-east-1",
+          "objectKey": "bde8e9f2d8dd7006224be8cf3d7d7618dc1b66238ea28c82537d1f3b2ff1ace8.zip",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::423277768248:role/cdk-hnb659fds-file-publishing-role-423277768248-us-east-1"
+        }
+      }
+    },
+    "06df2c78fceecbc85fb0c9f9e2730d0b8de7ccb55619e1c6f05e4e590f027f8e": {
+      "displayName": "WeatherAlertComputeStack Template",
+      "source": {
+        "path": "WeatherAlertComputeStack.template.json",
+        "packaging": "file"
+      },
+      "destinations": {
+        "423277768248-us-east-1-a2f435a1": {
+          "bucketName": "cdk-hnb659fds-assets-423277768248-us-east-1",
+          "objectKey": "06df2c78fceecbc85fb0c9f9e2730d0b8de7ccb55619e1c6f05e4e590f027f8e.json",
+          "region": "us-east-1",
+          "assumeRoleArn": "arn:${AWS::Partition}:iam::423277768248:role/cdk-hnb659fds-file-publishing-role-423277768248-us-east-1"
+        }
+      }
+    }
+  },
+  "dockerImages": {}
+}

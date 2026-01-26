@@ -1,0 +1,17 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Description: Export Bedrock Knowledge Base ID for Weather Alert System
+
+Parameters:
+  KnowledgeBaseId:
+    Type: String
+    Description: Bedrock Knowledge Base ID
+
+Resources:
+  DummyResource:
+    Type: AWS::CloudFormation::WaitConditionHandle
+
+Outputs:
+  KnowledgeBaseId:
+    Value: !Ref KnowledgeBaseId
+    Export:
+      Name: WeatherAlertBedrockKBId

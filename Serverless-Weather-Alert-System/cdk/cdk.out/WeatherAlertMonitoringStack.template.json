@@ -1,0 +1,619 @@
+{
+ "Description": "Monitoring and observability for weather alert system",
+ "Resources": {
+  "WeatherAlertAlarmTopic8E538C21": {
+   "Type": "AWS::SNS::Topic",
+   "Properties": {
+    "DisplayName": "Weather Alert System Alarms",
+    "TopicName": "WeatherAlert-SystemAlarms"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/WeatherAlertAlarmTopic/Resource"
+   }
+  },
+  "WeatherAlertAlarmTopicPolicyF98E8C6D": {
+   "Type": "AWS::SNS::TopicPolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sns:Publish",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": "*",
+       "Resource": {
+        "Ref": "WeatherAlertAlarmTopic8E538C21"
+       },
+       "Sid": "AllowPublishThroughSSLOnly"
+      },
+      {
+       "Action": "sns:Publish",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Ref": "WeatherAlertAlarmTopic8E538C21"
+       },
+       "Sid": "AllowPublishThroughSSLOnly"
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Topics": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/WeatherAlertAlarmTopic/Policy/Resource"
+   }
+  },
+  "WeatherAlertDashboard694ED477": {
+   "Type": "AWS::CloudWatch::Dashboard",
+   "Properties": {
+    "DashboardBody": {
+     "Fn::Join": [
+      "",
+      [
+       "{\"widgets\":[{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"RecipientsToLocations - Invocations & Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefRecipientsToLocationsFn3C2C04256AF80DD8"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefRecipientsToLocationsFn3C2C04256AF80DD8"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":0,\"properties\":{\"view\":\"timeSeries\",\"title\":\"RecipientsToLocations - Duration\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefRecipientsToLocationsFn3C2C04256AF80DD8"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"WeatherFetch - Invocations & Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefWeatherFetchFnAA97F15F1DA3CD93"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefWeatherFetchFnAA97F15F1DA3CD93"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":6,\"properties\":{\"view\":\"timeSeries\",\"title\":\"WeatherFetch - Duration\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefWeatherFetchFnAA97F15F1DA3CD93"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"MessageGenerator - Invocations & Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefMessageGeneratorFn38C9DEB2DA8EDFEC"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefMessageGeneratorFn38C9DEB2DA8EDFEC"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":12,\"properties\":{\"view\":\"timeSeries\",\"title\":\"MessageGenerator - Duration\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefMessageGeneratorFn38C9DEB2DA8EDFEC"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":18,\"properties\":{\"view\":\"timeSeries\",\"title\":\"SendSMS - Invocations & Errors\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefSendAdviceSMSFn1E4B7F74D99686BA"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/Lambda\",\"Errors\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefSendAdviceSMSFn1E4B7F74D99686BA"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":12,\"y\":18,\"properties\":{\"view\":\"timeSeries\",\"title\":\"SendSMS - Duration\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Duration\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefSendAdviceSMSFn1E4B7F74D99686BA"
+       },
+       "\"]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":24,\"properties\":{\"view\":\"timeSeries\",\"title\":\"LocationFetch Queue - Messages\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttLocationFetchQueue91236619QueueName00B3E0EE"
+       },
+       "\",{\"stat\":\"Maximum\"}],[\"AWS/SQS\",\"NumberOfMessagesSent\",\"QueueName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttLocationFetchQueue91236619QueueName00B3E0EE"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/SQS\",\"NumberOfMessagesReceived\",\"QueueName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttLocationFetchQueue91236619QueueName00B3E0EE"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":30,\"properties\":{\"view\":\"timeSeries\",\"title\":\"WeatherResult Queue - Messages\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttWeatherResultQueueE0248ACEQueueName21D206D0"
+       },
+       "\",{\"stat\":\"Maximum\"}],[\"AWS/SQS\",\"NumberOfMessagesSent\",\"QueueName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttWeatherResultQueueE0248ACEQueueName21D206D0"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/SQS\",\"NumberOfMessagesReceived\",\"QueueName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttWeatherResultQueueE0248ACEQueueName21D206D0"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":12,\"height\":6,\"x\":0,\"y\":36,\"properties\":{\"view\":\"timeSeries\",\"title\":\"Notify Queue - Messages\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/SQS\",\"ApproximateNumberOfMessagesVisible\",\"QueueName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttNotifyQueueB34E1758QueueName41D06F23"
+       },
+       "\",{\"stat\":\"Maximum\"}],[\"AWS/SQS\",\"NumberOfMessagesSent\",\"QueueName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttNotifyQueueB34E1758QueueName41D06F23"
+       },
+       "\",{\"stat\":\"Sum\"}],[\"AWS/SQS\",\"NumberOfMessagesReceived\",\"QueueName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttNotifyQueueB34E1758QueueName41D06F23"
+       },
+       "\",{\"stat\":\"Sum\"}]],\"yAxis\":{}}},{\"type\":\"metric\",\"width\":24,\"height\":6,\"x\":0,\"y\":42,\"properties\":{\"view\":\"timeSeries\",\"title\":\"End-to-End Flow\",\"region\":\"",
+       {
+        "Ref": "AWS::Region"
+       },
+       "\",\"metrics\":[[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefRecipientsToLocationsFn3C2C04256AF80DD8"
+       },
+       "\",{\"label\":\"1. Recipients Scanned\",\"stat\":\"Sum\"}],[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefWeatherFetchFnAA97F15F1DA3CD93"
+       },
+       "\",{\"label\":\"2. Weather Fetched\",\"stat\":\"Sum\"}],[\"AWS/Lambda\",\"Invocations\",\"FunctionName\",\"",
+       {
+        "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefMessageGeneratorFn38C9DEB2DA8EDFEC"
+       },
+       "\",{\"label\":\"3. Messages Generated\",\"stat\":\"Sum\"}]],\"yAxis\":{}}}]}"
+      ]
+     ]
+    },
+    "DashboardName": "WeatherAlert-System-Dashboard"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/WeatherAlertDashboard/Resource"
+   }
+  },
+  "RecipientsToLocationsErrorAlarm966F9C1C": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-RecipientsToLocations-Errors",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefRecipientsToLocationsFn3C2C04256AF80DD8"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 5,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/RecipientsToLocationsErrorAlarm/Resource"
+   }
+  },
+  "RecipientsToLocationsDurationAlarmB8908BA7": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-RecipientsToLocations-SlowExecution",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefRecipientsToLocationsFn3C2C04256AF80DD8"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 60000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/RecipientsToLocationsDurationAlarm/Resource"
+   }
+  },
+  "WeatherFetchErrorAlarmDA3F849F": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-WeatherFetch-Errors",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefWeatherFetchFnAA97F15F1DA3CD93"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 5,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/WeatherFetchErrorAlarm/Resource"
+   }
+  },
+  "WeatherFetchDurationAlarm0D7BC7F2": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-WeatherFetch-SlowExecution",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefWeatherFetchFnAA97F15F1DA3CD93"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 60000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/WeatherFetchDurationAlarm/Resource"
+   }
+  },
+  "MessageGeneratorErrorAlarmF04538FD": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-MessageGenerator-Errors",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefMessageGeneratorFn38C9DEB2DA8EDFEC"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 5,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/MessageGeneratorErrorAlarm/Resource"
+   }
+  },
+  "MessageGeneratorDurationAlarm5664CC60": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-MessageGenerator-SlowExecution",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefMessageGeneratorFn38C9DEB2DA8EDFEC"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 60000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/MessageGeneratorDurationAlarm/Resource"
+   }
+  },
+  "SendSMSErrorAlarm8310F678": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-SendSMS-Errors",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefSendAdviceSMSFn1E4B7F74D99686BA"
+      }
+     }
+    ],
+    "EvaluationPeriods": 1,
+    "MetricName": "Errors",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Sum",
+    "Threshold": 5,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/SendSMSErrorAlarm/Resource"
+   }
+  },
+  "SendSMSDurationAlarm910809C8": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-SendSMS-SlowExecution",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "FunctionName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertComputeStack:ExportsOutputRefSendAdviceSMSFn1E4B7F74D99686BA"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "Duration",
+    "Namespace": "AWS/Lambda",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 60000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/SendSMSDurationAlarm/Resource"
+   }
+  },
+  "LocationFetchQueueBacklogAlarm6E341BDE": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-LocationFetch-QueueBacklog",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttLocationFetchQueue91236619QueueName00B3E0EE"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/LocationFetchQueueBacklogAlarm/Resource"
+   }
+  },
+  "WeatherResultQueueBacklogAlarm6523DDCE": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-WeatherResult-QueueBacklog",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttWeatherResultQueueE0248ACEQueueName21D206D0"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/WeatherResultQueueBacklogAlarm/Resource"
+   }
+  },
+  "NotifyQueueBacklogAlarm6A7B0D0A": {
+   "Type": "AWS::CloudWatch::Alarm",
+   "Properties": {
+    "AlarmActions": [
+     {
+      "Ref": "WeatherAlertAlarmTopic8E538C21"
+     }
+    ],
+    "AlarmName": "WeatherAlert-Notify-QueueBacklog",
+    "ComparisonOperator": "GreaterThanThreshold",
+    "Dimensions": [
+     {
+      "Name": "QueueName",
+      "Value": {
+       "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttNotifyQueueB34E1758QueueName41D06F23"
+      }
+     }
+    ],
+    "EvaluationPeriods": 2,
+    "MetricName": "ApproximateNumberOfMessagesVisible",
+    "Namespace": "AWS/SQS",
+    "Period": 300,
+    "Statistic": "Average",
+    "Threshold": 1000,
+    "TreatMissingData": "notBreaching"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/NotifyQueueBacklogAlarm/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/0WKwQ7CIBBEv6V3ula8eDV611TvZgs1paXQsCAxhH83tIleZt6bDAfOD9BUGKkWcqq16iDdPYqJYaRnIkOQHnZRgp1fZoM1b1Yr8fmNm2YmtA0yohcDpAvS0Fl0srz+ctLo5jKtkHPBa/BL8JkZK3sYaffeH4E3wKuRlKpdMF7NPbRbfwGRaQvbtAAAAA=="
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertMonitoringStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "DashboardUrl": {
+   "Description": "CloudWatch Dashboard URL",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=",
+      {
+       "Ref": "WeatherAlertDashboard694ED477"
+      }
+     ]
+    ]
+   }
+  },
+  "AlarmTopicArn": {
+   "Description": "SNS Topic for system alarms",
+   "Value": {
+    "Ref": "WeatherAlertAlarmTopic8E538C21"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

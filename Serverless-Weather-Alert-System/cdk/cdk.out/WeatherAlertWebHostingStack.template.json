@@ -1,0 +1,1202 @@
+{
+ "Description": "Secure web hosting with CloudFront and Cognito authentication",
+ "Resources": {
+  "WeatherAlertUserPoolsmsRole96B9686E": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Condition": {
+        "StringEquals": {
+         "sts:ExternalId": "WeatherAlertWebHostingStackWeatherAlertUserPoolCED072E4"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cognito-idp.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Policies": [
+     {
+      "PolicyDocument": {
+       "Statement": [
+        {
+         "Action": "sns:Publish",
+         "Effect": "Allow",
+         "Resource": "*"
+        }
+       ],
+       "Version": "2012-10-17"
+      },
+      "PolicyName": "sns-publish"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertUserPool/smsRole/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Wildcard permission required by Cognito for SMS MFA functionality. This is AWS Cognito managed behavior.",
+       "id": "AwsSolutions-IAM5",
+       "applies_to": [
+        "Resource::*"
+       ]
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertUserPoolA3C999DE": {
+   "Type": "AWS::Cognito::UserPool",
+   "Properties": {
+    "AccountRecoverySetting": {
+     "RecoveryMechanisms": [
+      {
+       "Name": "verified_email",
+       "Priority": 1
+      }
+     ]
+    },
+    "AdminCreateUserConfig": {
+     "AllowAdminCreateUserOnly": true
+    },
+    "AliasAttributes": [
+     "email"
+    ],
+    "AutoVerifiedAttributes": [
+     "email"
+    ],
+    "EmailVerificationMessage": "The verification code to your new account is {####}",
+    "EmailVerificationSubject": "Verify your new account",
+    "EnabledMfas": [
+     "SMS_MFA",
+     "SOFTWARE_TOKEN_MFA"
+    ],
+    "MfaConfiguration": "OPTIONAL",
+    "Policies": {
+     "PasswordPolicy": {
+      "MinimumLength": 12,
+      "RequireLowercase": true,
+      "RequireNumbers": true,
+      "RequireSymbols": true,
+      "RequireUppercase": true
+     }
+    },
+    "SmsConfiguration": {
+     "ExternalId": "WeatherAlertWebHostingStackWeatherAlertUserPoolCED072E4",
+     "SnsCallerArn": {
+      "Fn::GetAtt": [
+       "WeatherAlertUserPoolsmsRole96B9686E",
+       "Arn"
+      ]
+     }
+    },
+    "SmsVerificationMessage": "The verification code to your new account is {####}",
+    "UserPoolName": "WeatherAlertUsers",
+    "VerificationMessageTemplate": {
+     "DefaultEmailOption": "CONFIRM_WITH_CODE",
+     "EmailMessage": "The verification code to your new account is {####}",
+     "EmailSubject": "Verify your new account",
+     "SmsMessage": "The verification code to your new account is {####}"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertUserPool/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Advanced Security Mode requires Cognito Plus plan. For production deployments, customers should upgrade to enable advanced security features.",
+       "id": "AwsSolutions-COG3"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertUserPoolWeatherAlertWebClient430D9C57": {
+   "Type": "AWS::Cognito::UserPoolClient",
+   "Properties": {
+    "AllowedOAuthFlows": [
+     "code"
+    ],
+    "AllowedOAuthFlowsUserPoolClient": true,
+    "AllowedOAuthScopes": [
+     "email",
+     "openid",
+     "profile"
+    ],
+    "CallbackURLs": [
+     "https://example.com"
+    ],
+    "ClientName": "WeatherAlertWebApp",
+    "ExplicitAuthFlows": [
+     "ALLOW_USER_PASSWORD_AUTH",
+     "ALLOW_USER_SRP_AUTH",
+     "ALLOW_REFRESH_TOKEN_AUTH"
+    ],
+    "PreventUserExistenceErrors": "ENABLED",
+    "SupportedIdentityProviders": [
+     "COGNITO"
+    ],
+    "UserPoolId": {
+     "Ref": "WeatherAlertUserPoolA3C999DE"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertUserPool/WeatherAlertWebClient/Resource"
+   }
+  },
+  "WeatherAlertIdentityPool": {
+   "Type": "AWS::Cognito::IdentityPool",
+   "Properties": {
+    "AllowUnauthenticatedIdentities": false,
+    "CognitoIdentityProviders": [
+     {
+      "ClientId": {
+       "Ref": "WeatherAlertUserPoolWeatherAlertWebClient430D9C57"
+      },
+      "ProviderName": {
+       "Fn::GetAtt": [
+        "WeatherAlertUserPoolA3C999DE",
+        "ProviderName"
+       ]
+      }
+     }
+    ],
+    "IdentityPoolName": "WeatherAlertIdentity"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertIdentityPool"
+   }
+  },
+  "CognitoAuthenticatedRole5CA1BC89": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRoleWithWebIdentity",
+       "Condition": {
+        "StringEquals": {
+         "cognito-identity.amazonaws.com:aud": {
+          "Ref": "WeatherAlertIdentityPool"
+         }
+        },
+        "ForAnyValue:StringLike": {
+         "cognito-identity.amazonaws.com:amr": "authenticated"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Federated": "cognito-identity.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/CognitoAuthenticatedRole/Resource"
+   }
+  },
+  "IdentityPoolRoleAttachment": {
+   "Type": "AWS::Cognito::IdentityPoolRoleAttachment",
+   "Properties": {
+    "IdentityPoolId": {
+     "Ref": "WeatherAlertIdentityPool"
+    },
+    "Roles": {
+     "authenticated": {
+      "Fn::GetAtt": [
+       "CognitoAuthenticatedRole5CA1BC89",
+       "Arn"
+      ]
+     }
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/IdentityPoolRoleAttachment"
+   }
+  },
+  "SQSPollerFunctionServiceRoleF6A9AC71": {
+   "Type": "AWS::IAM::Role",
+   "Properties": {
+    "AssumeRolePolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sts:AssumeRole",
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "lambda.amazonaws.com"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "ManagedPolicyArns": [
+     {
+      "Fn::Join": [
+       "",
+       [
+        "arn:",
+        {
+         "Ref": "AWS::Partition"
+        },
+        ":iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      ]
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/SQSPollerFunction/ServiceRole/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "AWSLambdaBasicExecutionRole is AWS managed policy for Lambda execution. Required for CloudWatch Logs access.",
+       "id": "AwsSolutions-IAM4",
+       "applies_to": [
+        "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      },
+      {
+       "reason": "Python 3.12 is the latest stable runtime. This warning is a false positive.",
+       "id": "AwsSolutions-L1"
+      }
+     ]
+    }
+   }
+  },
+  "SQSPollerFunctionServiceRoleDefaultPolicy689E8DA3": {
+   "Type": "AWS::IAM::Policy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": [
+        "sqs:ChangeMessageVisibility",
+        "sqs:DeleteMessage",
+        "sqs:GetQueueAttributes",
+        "sqs:GetQueueUrl",
+        "sqs:ReceiveMessage"
+       ],
+       "Effect": "Allow",
+       "Resource": {
+        "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputFnGetAttNotifyQueueB34E1758Arn0733E2D4"
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "PolicyName": "SQSPollerFunctionServiceRoleDefaultPolicy689E8DA3",
+    "Roles": [
+     {
+      "Ref": "SQSPollerFunctionServiceRoleF6A9AC71"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/SQSPollerFunction/ServiceRole/DefaultPolicy/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "AWSLambdaBasicExecutionRole is AWS managed policy for Lambda execution. Required for CloudWatch Logs access.",
+       "id": "AwsSolutions-IAM4",
+       "applies_to": [
+        "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      },
+      {
+       "reason": "Python 3.12 is the latest stable runtime. This warning is a false positive.",
+       "id": "AwsSolutions-L1"
+      }
+     ]
+    }
+   }
+  },
+  "SQSPollerFunction8E43D4EE": {
+   "Type": "AWS::Lambda::Function",
+   "Properties": {
+    "Code": {
+     "S3Bucket": "cdk-hnb659fds-assets-423277768248-us-east-1",
+     "S3Key": "a5ff26be30be9ac41f979b6331a34921fbcd1a8e17ea729d936169be47e14298.zip"
+    },
+    "Environment": {
+     "Variables": {
+      "NOTIFY_QUEUE_URL": {
+       "Fn::ImportValue": "WeatherAlertDataStack:ExportsOutputRefNotifyQueueB34E17580319ED30"
+      }
+     }
+    },
+    "FunctionName": "WeatherAlert-SQSPoller",
+    "Handler": "index.lambda_handler",
+    "Role": {
+     "Fn::GetAtt": [
+      "SQSPollerFunctionServiceRoleF6A9AC71",
+      "Arn"
+     ]
+    },
+    "Runtime": "python3.14",
+    "Timeout": 30
+   },
+   "DependsOn": [
+    "SQSPollerFunctionServiceRoleDefaultPolicy689E8DA3",
+    "SQSPollerFunctionServiceRoleF6A9AC71"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/SQSPollerFunction/Resource",
+    "aws:asset:path": "asset.a5ff26be30be9ac41f979b6331a34921fbcd1a8e17ea729d936169be47e14298",
+    "aws:asset:is-bundled": false,
+    "aws:asset:property": "Code",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "AWSLambdaBasicExecutionRole is AWS managed policy for Lambda execution. Required for CloudWatch Logs access.",
+       "id": "AwsSolutions-IAM4",
+       "applies_to": [
+        "Policy::arn:<AWS::Partition>:iam::aws:policy/service-role/AWSLambdaBasicExecutionRole"
+       ]
+      },
+      {
+       "reason": "Python 3.12 is the latest stable runtime. This warning is a false positive.",
+       "id": "AwsSolutions-L1"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertAPI4572357A": {
+   "Type": "AWS::ApiGateway::RestApi",
+   "Properties": {
+    "Description": "Secure API for fetching weather alerts",
+    "Name": "Weather Alert API"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertAPI/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Request validation handled by Lambda function. Input validation implemented in application code.",
+       "id": "AwsSolutions-APIG2"
+      },
+      {
+       "reason": "Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.",
+       "id": "AwsSolutions-APIG1"
+      },
+      {
+       "reason": "CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-APIG6"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertAPIDeploymentAC479194e21e0ea6117f5ad467df58c10c8c45b6": {
+   "Type": "AWS::ApiGateway::Deployment",
+   "Properties": {
+    "Description": "Secure API for fetching weather alerts",
+    "RestApiId": {
+     "Ref": "WeatherAlertAPI4572357A"
+    }
+   },
+   "DependsOn": [
+    "CognitoAuthorizerF3215DBC",
+    "WeatherAlertAPImessagesGET30476D84",
+    "WeatherAlertAPImessagesOPTIONSA3FEEB39",
+    "WeatherAlertAPImessagesF3BBAD85",
+    "WeatherAlertAPIOPTIONSC8E479B3"
+   ],
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertAPI/Deployment/Resource",
+    "aws:cdk:do-not-refactor": true,
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Request validation handled by Lambda function. Input validation implemented in application code.",
+       "id": "AwsSolutions-APIG2"
+      },
+      {
+       "reason": "Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.",
+       "id": "AwsSolutions-APIG1"
+      },
+      {
+       "reason": "CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-APIG6"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertAPIDeploymentStageprodB437BECD": {
+   "Type": "AWS::ApiGateway::Stage",
+   "Properties": {
+    "DeploymentId": {
+     "Ref": "WeatherAlertAPIDeploymentAC479194e21e0ea6117f5ad467df58c10c8c45b6"
+    },
+    "MethodSettings": [
+     {
+      "DataTraceEnabled": false,
+      "HttpMethod": "*",
+      "MetricsEnabled": true,
+      "ResourcePath": "/*",
+      "ThrottlingBurstLimit": 200,
+      "ThrottlingRateLimit": 100
+     }
+    ],
+    "RestApiId": {
+     "Ref": "WeatherAlertAPI4572357A"
+    },
+    "StageName": "prod"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertAPI/DeploymentStage.prod/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Request validation handled by Lambda function. Input validation implemented in application code.",
+       "id": "AwsSolutions-APIG2"
+      },
+      {
+       "reason": "Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.",
+       "id": "AwsSolutions-APIG1"
+      },
+      {
+       "reason": "CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-APIG6"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertAPIOPTIONSC8E479B3": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Fn::GetAtt": [
+      "WeatherAlertAPI4572357A",
+      "RootResourceId"
+     ]
+    },
+    "RestApiId": {
+     "Ref": "WeatherAlertAPI4572357A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertAPI/Default/OPTIONS/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Request validation handled by Lambda function. Input validation implemented in application code.",
+       "id": "AwsSolutions-APIG2"
+      },
+      {
+       "reason": "Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.",
+       "id": "AwsSolutions-APIG1"
+      },
+      {
+       "reason": "CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-APIG6"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertAPImessagesF3BBAD85": {
+   "Type": "AWS::ApiGateway::Resource",
+   "Properties": {
+    "ParentId": {
+     "Fn::GetAtt": [
+      "WeatherAlertAPI4572357A",
+      "RootResourceId"
+     ]
+    },
+    "PathPart": "messages",
+    "RestApiId": {
+     "Ref": "WeatherAlertAPI4572357A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertAPI/Default/messages/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Request validation handled by Lambda function. Input validation implemented in application code.",
+       "id": "AwsSolutions-APIG2"
+      },
+      {
+       "reason": "Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.",
+       "id": "AwsSolutions-APIG1"
+      },
+      {
+       "reason": "CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-APIG6"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertAPImessagesOPTIONSA3FEEB39": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "ApiKeyRequired": false,
+    "AuthorizationType": "NONE",
+    "HttpMethod": "OPTIONS",
+    "Integration": {
+     "IntegrationResponses": [
+      {
+       "ResponseParameters": {
+        "method.response.header.Access-Control-Allow-Headers": "'Content-Type,X-Amz-Date,Authorization,X-Api-Key,X-Amz-Security-Token'",
+        "method.response.header.Access-Control-Allow-Origin": "'*'",
+        "method.response.header.Access-Control-Allow-Methods": "'OPTIONS,GET,PUT,POST,DELETE,PATCH,HEAD'"
+       },
+       "StatusCode": "204"
+      }
+     ],
+     "RequestTemplates": {
+      "application/json": "{ statusCode: 200 }"
+     },
+     "Type": "MOCK"
+    },
+    "MethodResponses": [
+     {
+      "ResponseParameters": {
+       "method.response.header.Access-Control-Allow-Headers": true,
+       "method.response.header.Access-Control-Allow-Origin": true,
+       "method.response.header.Access-Control-Allow-Methods": true
+      },
+      "StatusCode": "204"
+     }
+    ],
+    "ResourceId": {
+     "Ref": "WeatherAlertAPImessagesF3BBAD85"
+    },
+    "RestApiId": {
+     "Ref": "WeatherAlertAPI4572357A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertAPI/Default/messages/OPTIONS/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Request validation handled by Lambda function. Input validation implemented in application code.",
+       "id": "AwsSolutions-APIG2"
+      },
+      {
+       "reason": "Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.",
+       "id": "AwsSolutions-APIG1"
+      },
+      {
+       "reason": "CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-APIG6"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertAPImessagesGETApiPermissionWeatherAlertWebHostingStackWeatherAlertAPI275B3A89GETmessages1721765D": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SQSPollerFunction8E43D4EE",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:423277768248:",
+       {
+        "Ref": "WeatherAlertAPI4572357A"
+       },
+       "/",
+       {
+        "Ref": "WeatherAlertAPIDeploymentStageprodB437BECD"
+       },
+       "/GET/messages"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertAPI/Default/messages/GET/ApiPermission.WeatherAlertWebHostingStackWeatherAlertAPI275B3A89.GET..messages",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Request validation handled by Lambda function. Input validation implemented in application code.",
+       "id": "AwsSolutions-APIG2"
+      },
+      {
+       "reason": "Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.",
+       "id": "AwsSolutions-APIG1"
+      },
+      {
+       "reason": "CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-APIG6"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertAPImessagesGETApiPermissionTestWeatherAlertWebHostingStackWeatherAlertAPI275B3A89GETmessagesAF8D6DCE": {
+   "Type": "AWS::Lambda::Permission",
+   "Properties": {
+    "Action": "lambda:InvokeFunction",
+    "FunctionName": {
+     "Fn::GetAtt": [
+      "SQSPollerFunction8E43D4EE",
+      "Arn"
+     ]
+    },
+    "Principal": "apigateway.amazonaws.com",
+    "SourceArn": {
+     "Fn::Join": [
+      "",
+      [
+       "arn:aws:execute-api:us-east-1:423277768248:",
+       {
+        "Ref": "WeatherAlertAPI4572357A"
+       },
+       "/test-invoke-stage/GET/messages"
+      ]
+     ]
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertAPI/Default/messages/GET/ApiPermission.Test.WeatherAlertWebHostingStackWeatherAlertAPI275B3A89.GET..messages",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Request validation handled by Lambda function. Input validation implemented in application code.",
+       "id": "AwsSolutions-APIG2"
+      },
+      {
+       "reason": "Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.",
+       "id": "AwsSolutions-APIG1"
+      },
+      {
+       "reason": "CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-APIG6"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertAPImessagesGET30476D84": {
+   "Type": "AWS::ApiGateway::Method",
+   "Properties": {
+    "AuthorizationType": "COGNITO_USER_POOLS",
+    "AuthorizerId": {
+     "Ref": "CognitoAuthorizerF3215DBC"
+    },
+    "HttpMethod": "GET",
+    "Integration": {
+     "IntegrationHttpMethod": "POST",
+     "Type": "AWS_PROXY",
+     "Uri": {
+      "Fn::Join": [
+       "",
+       [
+        "arn:aws:apigateway:us-east-1:lambda:path/2015-03-31/functions/",
+        {
+         "Fn::GetAtt": [
+          "SQSPollerFunction8E43D4EE",
+          "Arn"
+         ]
+        },
+        "/invocations"
+       ]
+      ]
+     }
+    },
+    "ResourceId": {
+     "Ref": "WeatherAlertAPImessagesF3BBAD85"
+    },
+    "RestApiId": {
+     "Ref": "WeatherAlertAPI4572357A"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertAPI/Default/messages/GET/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "Request validation handled by Lambda function. Input validation implemented in application code.",
+       "id": "AwsSolutions-APIG2"
+      },
+      {
+       "reason": "Access logging disabled for AWS Sample to reduce costs. Customers should enable CloudWatch Logs in production deployments.",
+       "id": "AwsSolutions-APIG1"
+      },
+      {
+       "reason": "CloudWatch logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-APIG6"
+      }
+     ]
+    }
+   }
+  },
+  "CognitoAuthorizerF3215DBC": {
+   "Type": "AWS::ApiGateway::Authorizer",
+   "Properties": {
+    "IdentitySource": "method.request.header.Authorization",
+    "Name": "WeatherAlertCognitoAuthorizer",
+    "ProviderARNs": [
+     {
+      "Fn::GetAtt": [
+       "WeatherAlertUserPoolA3C999DE",
+       "Arn"
+      ]
+     }
+    ],
+    "RestApiId": {
+     "Ref": "WeatherAlertAPI4572357A"
+    },
+    "Type": "COGNITO_USER_POOLS"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/CognitoAuthorizer/Resource"
+   }
+  },
+  "WeatherAlertWebBucketD9CCCAAD": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": "weather-alert-web-ui-423277768248",
+    "LoggingConfiguration": {
+     "LogFilePrefix": "access-logs/"
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertWebBucket/Resource"
+   }
+  },
+  "WeatherAlertWebBucketPolicy66E996D9": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "WeatherAlertWebBucketD9CCCAAD"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "WeatherAlertWebBucketD9CCCAAD",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "WeatherAlertWebBucketD9CCCAAD",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      },
+      {
+       "Action": "s3:PutObject",
+       "Condition": {
+        "ArnLike": {
+         "aws:SourceArn": {
+          "Fn::GetAtt": [
+           "WeatherAlertWebBucketD9CCCAAD",
+           "Arn"
+          ]
+         }
+        },
+        "StringEquals": {
+         "aws:SourceAccount": "423277768248"
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "logging.s3.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "WeatherAlertWebBucketD9CCCAAD",
+            "Arn"
+           ]
+          },
+          "/access-logs/*"
+         ]
+        ]
+       }
+      },
+      {
+       "Action": "s3:GetObject",
+       "Condition": {
+        "StringEquals": {
+         "AWS:SourceArn": {
+          "Fn::Join": [
+           "",
+           [
+            "arn:",
+            {
+             "Ref": "AWS::Partition"
+            },
+            ":cloudfront::",
+            {
+             "Ref": "AWS::AccountId"
+            },
+            ":distribution/",
+            {
+             "Ref": "WeatherAlertDistributionDBFA7249"
+            }
+           ]
+          ]
+         }
+        }
+       },
+       "Effect": "Allow",
+       "Principal": {
+        "Service": "cloudfront.amazonaws.com"
+       },
+       "Resource": {
+        "Fn::Join": [
+         "",
+         [
+          {
+           "Fn::GetAtt": [
+            "WeatherAlertWebBucketD9CCCAAD",
+            "Arn"
+           ]
+          },
+          "/*"
+         ]
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertWebBucket/Policy/Resource"
+   }
+  },
+  "WeatherAlertOAC35703809": {
+   "Type": "AWS::CloudFront::OriginAccessControl",
+   "Properties": {
+    "OriginAccessControlConfig": {
+     "Description": "OAC for Weather Alert Web UI S3 bucket",
+     "Name": "WeatherAlertOAC",
+     "OriginAccessControlOriginType": "s3",
+     "SigningBehavior": "always",
+     "SigningProtocol": "sigv4"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertOAC/Resource"
+   }
+  },
+  "WeatherAlertDistributionDBFA7249": {
+   "Type": "AWS::CloudFront::Distribution",
+   "Properties": {
+    "DistributionConfig": {
+     "Comment": "Weather Alert System Web UI",
+     "CustomErrorResponses": [
+      {
+       "ErrorCachingMinTTL": 300,
+       "ErrorCode": 403,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      },
+      {
+       "ErrorCachingMinTTL": 300,
+       "ErrorCode": 404,
+       "ResponseCode": 200,
+       "ResponsePagePath": "/index.html"
+      }
+     ],
+     "DefaultCacheBehavior": {
+      "AllowedMethods": [
+       "GET",
+       "HEAD",
+       "OPTIONS"
+      ],
+      "CachePolicyId": "658327ea-f89d-4fab-a63d-7e88639e58f6",
+      "CachedMethods": [
+       "GET",
+       "HEAD",
+       "OPTIONS"
+      ],
+      "Compress": true,
+      "TargetOriginId": "WeatherAlertWebHostingStackWeatherAlertDistributionOrigin1FC1EB435",
+      "ViewerProtocolPolicy": "redirect-to-https"
+     },
+     "DefaultRootObject": "index.html",
+     "Enabled": true,
+     "HttpVersion": "http2",
+     "IPV6Enabled": true,
+     "Origins": [
+      {
+       "DomainName": {
+        "Fn::GetAtt": [
+         "WeatherAlertWebBucketD9CCCAAD",
+         "RegionalDomainName"
+        ]
+       },
+       "Id": "WeatherAlertWebHostingStackWeatherAlertDistributionOrigin1FC1EB435",
+       "OriginAccessControlId": {
+        "Fn::GetAtt": [
+         "WeatherAlertOAC35703809",
+         "Id"
+        ]
+       },
+       "S3OriginConfig": {
+        "OriginAccessIdentity": ""
+       }
+      }
+     ],
+     "PriceClass": "PriceClass_100"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/WeatherAlertDistribution/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "CloudFront access logging disabled for AWS Sample to reduce costs. Customers should enable in production deployments.",
+       "id": "AwsSolutions-CFR3"
+      },
+      {
+       "reason": "Using default CloudFront certificate for simplicity in AWS Sample. Customers should use custom certificate with TLS 1.2+ in production.",
+       "id": "AwsSolutions-CFR4"
+      }
+     ]
+    }
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/22RTW/CMAyGfwv3kLH2smsBTdphGiraGYXUK4Y0qWJniEX971P6sfawk5/XX7GdTGZZLjcrdae1rm5rg2cZj6z0Tag7naJ2tUV2Mn4S+INzRuy+7B9PsDMIlpeh2fNWgWXkx1S81KUzUDArfWnAcidQNTImZ0rs7cEZ1I8kB+qEUc25UjK+BqsZnU2xJR/AN0iEznaC8pMiAiZZJCMol3Eb9A14qwjEgKlopMHMby51J1SLtWK4q4eMJRAXLfZzjriH1rhHM669UEdWdb/RACWQC15DP8I78MVVKTjSFB07jzz8wnRcKgJfnMcf8CltVp3QxoXqyzvLMh7zD4812kJrINo5y374gv/ceyT2eA7TGZe66+ax+kOmRdDWfa/AbeBOWFeBvNLT9/OLzDYyW10Jce2DZWxAloP9BaLDc81uAgAA"
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertWebHostingStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "WeatherAlertAPIEndpoint4F897EC0": {
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "WeatherAlertAPI4572357A"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "WeatherAlertAPIDeploymentStageprodB437BECD"
+      },
+      "/"
+     ]
+    ]
+   }
+  },
+  "WebsiteURL": {
+   "Description": "CloudFront URL for Weather Alert Web UI",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Fn::GetAtt": [
+        "WeatherAlertDistributionDBFA7249",
+        "DomainName"
+       ]
+      }
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "WeatherAlertWebsiteURL"
+   }
+  },
+  "UserPoolId": {
+   "Description": "Cognito User Pool ID",
+   "Value": {
+    "Ref": "WeatherAlertUserPoolA3C999DE"
+   },
+   "Export": {
+    "Name": "WeatherAlertUserPoolId"
+   }
+  },
+  "UserPoolClientId": {
+   "Description": "Cognito User Pool Client ID",
+   "Value": {
+    "Ref": "WeatherAlertUserPoolWeatherAlertWebClient430D9C57"
+   },
+   "Export": {
+    "Name": "WeatherAlertUserPoolClientId"
+   }
+  },
+  "IdentityPoolId": {
+   "Description": "Cognito Identity Pool ID",
+   "Value": {
+    "Ref": "WeatherAlertIdentityPool"
+   },
+   "Export": {
+    "Name": "WeatherAlertIdentityPoolId"
+   }
+  },
+  "ApiEndpoint": {
+   "Description": "API Gateway endpoint for fetching messages",
+   "Value": {
+    "Fn::Join": [
+     "",
+     [
+      "https://",
+      {
+       "Ref": "WeatherAlertAPI4572357A"
+      },
+      ".execute-api.us-east-1.",
+      {
+       "Ref": "AWS::URLSuffix"
+      },
+      "/",
+      {
+       "Ref": "WeatherAlertAPIDeploymentStageprodB437BECD"
+      },
+      "/"
+     ]
+    ]
+   },
+   "Export": {
+    "Name": "WeatherAlertApiEndpoint"
+   }
+  },
+  "Region": {
+   "Description": "AWS Region",
+   "Value": "us-east-1",
+   "Export": {
+    "Name": "WeatherAlertRegion"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}

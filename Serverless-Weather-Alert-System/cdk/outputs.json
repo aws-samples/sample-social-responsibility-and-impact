@@ -1,0 +1,41 @@
+{
+  "JacarandaDataStack": {
+    "ExportsOutputRefMumBaseTableF15CC75CCF9F04D2": "MumBaseTable",
+    "DataBucketName": "jacaranda-mum-data-423277768248",
+    "ExportsOutputFnGetAttMumBaseTableF15CC75CArnC53E9F76": "arn:aws:dynamodb:us-east-1:423277768248:table/MumBaseTable",
+    "ExportsOutputFnGetAttNotifyQueueB34E1758QueueName41D06F23": "NotifyQueue",
+    "ExportsOutputRefWeatherResultQueueE0248ACE7A86D590": "https://sqs.us-east-1.amazonaws.com/423277768248/WeatherResult",
+    "ExportsOutputFnGetAttLocationFetchQueue91236619QueueName00B3E0EE": "LocationFetch",
+    "ExportsOutputRefNotifyQueueB34E17580319ED30": "https://sqs.us-east-1.amazonaws.com/423277768248/NotifyQueue",
+    "LocationFetchQueueUrl": "https://sqs.us-east-1.amazonaws.com/423277768248/LocationFetch",
+    "ExportsOutputFnGetAttWeatherResultQueueE0248ACEArn15DCF5A1": "arn:aws:sqs:us-east-1:423277768248:WeatherResult",
+    "MumTableName": "MumBaseTable",
+    "ExportsOutputFnGetAttWeatherResultQueueE0248ACEQueueName21D206D0": "WeatherResult",
+    "ExportsOutputRefLocationFetchQueue91236619E574A292": "https://sqs.us-east-1.amazonaws.com/423277768248/LocationFetch",
+    "NotifyQueueUrl": "https://sqs.us-east-1.amazonaws.com/423277768248/NotifyQueue",
+    "ExportsOutputFnGetAttLocationFetchQueue91236619ArnF5D7573C": "arn:aws:sqs:us-east-1:423277768248:LocationFetch",
+    "ExportsOutputFnGetAttNotifyQueueB34E1758Arn0733E2D4": "arn:aws:sqs:us-east-1:423277768248:NotifyQueue"
+  },
+  "JacarandaComputeStack": {
+    "WeatherFetchFnArn": "arn:aws:lambda:us-east-1:423277768248:function:Jacaranda-WeatherFetch",
+    "ExportsOutputRefAdviceFn3383839681D2C854": "Jacaranda-AdviceGeneration",
+    "ProfilesToLocationsFnArn": "arn:aws:lambda:us-east-1:423277768248:function:Jacaranda-ProfilesToLocations",
+    "ExportsOutputRefSendAdviceSMSFn1E4B7F74D99686BA": "Jacaranda-SendAdviceSMS",
+    "AdviceFnArn": "arn:aws:lambda:us-east-1:423277768248:function:Jacaranda-AdviceGeneration",
+    "ExportsOutputRefProfilesToLocationsFn9944A528CC5D6211": "Jacaranda-ProfilesToLocations",
+    "ExportsOutputRefWeatherFetchFnAA97F15F1DA3CD93": "Jacaranda-WeatherFetch"
+  },
+  "JacarandaMonitoringStack": {
+    "DashboardUrl": "https://console.aws.amazon.com/cloudwatch/home?region=us-east-1#dashboards:name=Jacaranda-Maternal-Alerts",
+    "AlarmTopicArn": "arn:aws:sns:us-east-1:423277768248:Jacaranda-SystemAlarms"
+  },
+  "JacarandaWebHostingStack": {
+    "UserPoolClientId": "1qftv7dstpdgpcvfh0ils16q7n",
+    "JacarandaAPIEndpointD5D1E85B": "https://shcamtsk11.execute-api.us-east-1.amazonaws.com/prod/",
+    "UserPoolId": "us-east-1_1Cp5MI8My",
+    "WebsiteURL": "https://d1nsrnkx9ujwej.cloudfront.net",
+    "Region": "us-east-1",
+    "IdentityPoolId": "us-east-1:8efabb2e-1084-4029-ab3f-6395dcb883e9",
+    "ApiEndpoint": "https://shcamtsk11.execute-api.us-east-1.amazonaws.com/prod/"
+  }
+}
