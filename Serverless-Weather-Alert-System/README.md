@@ -251,24 +251,6 @@ For comprehensive security guidance, refer to the [Security Pillar of the AWS We
 - **X-Ray Tracing**: Distributed tracing across services
 - **DLQs**: Dead-letter queues for failed messages (3 retries)
 
-## 💰 Cost Estimate
-
-**Example**: 240K recipients with daily checks (~1,300 unique locations after deduplication)
-
-| Service | Monthly Cost | Notes |
-|---------|--------------|-------|
-| Lambda | $2.00 | ~3M invocations/month |
-| DynamoDB | $5.00 | On-demand pricing, 240K items |
-| SQS | Free | Within free tier |
-| Bedrock KB | $10.00 | Knowledge Base queries |
-| Bedrock Claude | $20.00 | ~1,300 messages/day |
-| Weather API | Free | Tomorrow.io free tier (500/day) |
-| CloudWatch | $5.00 | Logs and metrics |
-| CloudFront | $1.00 | Low traffic web UI |
-| Cognito | Free | < 50K MAU |
-| API Gateway | $3.50 | REST API calls |
-| **Total** | **~$47/month** | **Scales with usage** |
-
 **Cost Optimization Features**:
 - Location deduplication (80% API call reduction)
 - Serverless architecture (pay only for what you use)
@@ -366,3 +348,4 @@ Contributions welcome! This is an AWS Sample project.
 ## 📝 License
 
 This project is licensed under the MIT-0 License. See [LICENSE](LICENSE) file.
+
