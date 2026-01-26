@@ -1,0 +1,695 @@
+{
+ "Description": "Data layer for serverless weather alert system",
+ "Resources": {
+  "WeatherAlertDataBucketD16F4096": {
+   "Type": "AWS::S3::Bucket",
+   "Properties": {
+    "BucketEncryption": {
+     "ServerSideEncryptionConfiguration": [
+      {
+       "ServerSideEncryptionByDefault": {
+        "SSEAlgorithm": "AES256"
+       }
+      }
+     ]
+    },
+    "BucketName": "weather-alert-data-423277768248",
+    "LifecycleConfiguration": {
+     "Rules": [
+      {
+       "Id": "ArchiveOldData",
+       "Status": "Enabled",
+       "Transitions": [
+        {
+         "StorageClass": "INTELLIGENT_TIERING",
+         "TransitionInDays": 90
+        }
+       ]
+      }
+     ]
+    },
+    "PublicAccessBlockConfiguration": {
+     "BlockPublicAcls": true,
+     "BlockPublicPolicy": true,
+     "IgnorePublicAcls": true,
+     "RestrictPublicBuckets": true
+    },
+    "VersioningConfiguration": {
+     "Status": "Enabled"
+    }
+   },
+   "UpdateReplacePolicy": "Retain",
+   "DeletionPolicy": "Retain",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/WeatherAlertDataBucket/Resource",
+    "cdk_nag": {
+     "rules_to_suppress": [
+      {
+       "reason": "S3 access logging not required for AWS Sample project. Customers can enable in production deployments.",
+       "id": "AwsSolutions-S1"
+      }
+     ]
+    }
+   }
+  },
+  "WeatherAlertDataBucketPolicyC99F2CDA": {
+   "Type": "AWS::S3::BucketPolicy",
+   "Properties": {
+    "Bucket": {
+     "Ref": "WeatherAlertDataBucketD16F4096"
+    },
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "s3:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": [
+        {
+         "Fn::GetAtt": [
+          "WeatherAlertDataBucketD16F4096",
+          "Arn"
+         ]
+        },
+        {
+         "Fn::Join": [
+          "",
+          [
+           {
+            "Fn::GetAtt": [
+             "WeatherAlertDataBucketD16F4096",
+             "Arn"
+            ]
+           },
+           "/*"
+          ]
+         ]
+        }
+       ]
+      }
+     ],
+     "Version": "2012-10-17"
+    }
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/WeatherAlertDataBucket/Policy/Resource"
+   }
+  },
+  "LocationFetchDLQD8E8F4D7": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 1209600,
+    "QueueName": "LocationFetchDLQ",
+    "SqsManagedSseEnabled": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/LocationFetchDLQ/Resource"
+   }
+  },
+  "LocationFetchDLQPolicyC483649E": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "LocationFetchDLQD8E8F4D7",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "LocationFetchDLQD8E8F4D7"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/LocationFetchDLQ/Policy/Resource"
+   }
+  },
+  "LocationFetchQueue91236619": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 345600,
+    "QueueName": "LocationFetch",
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "LocationFetchDLQD8E8F4D7",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 3
+    },
+    "SqsManagedSseEnabled": true,
+    "VisibilityTimeout": 300
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/LocationFetchQueue/Resource"
+   }
+  },
+  "LocationFetchQueuePolicy40F65217": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "LocationFetchQueue91236619",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "LocationFetchQueue91236619"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/LocationFetchQueue/Policy/Resource"
+   }
+  },
+  "WeatherResultDLQ303B9C4D": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 1209600,
+    "QueueName": "WeatherResultDLQ",
+    "SqsManagedSseEnabled": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/WeatherResultDLQ/Resource"
+   }
+  },
+  "WeatherResultDLQPolicyECA83658": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "WeatherResultDLQ303B9C4D",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "WeatherResultDLQ303B9C4D"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/WeatherResultDLQ/Policy/Resource"
+   }
+  },
+  "WeatherResultQueueE0248ACE": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 345600,
+    "QueueName": "WeatherResult",
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "WeatherResultDLQ303B9C4D",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 3
+    },
+    "SqsManagedSseEnabled": true,
+    "VisibilityTimeout": 300
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/WeatherResultQueue/Resource"
+   }
+  },
+  "WeatherResultQueuePolicy7FB36A36": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "WeatherResultQueueE0248ACE",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "WeatherResultQueueE0248ACE"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/WeatherResultQueue/Policy/Resource"
+   }
+  },
+  "AdviceRequestDLQ1EC9AC4D": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 1209600,
+    "QueueName": "AdviceRequestDLQ",
+    "SqsManagedSseEnabled": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/AdviceRequestDLQ/Resource"
+   }
+  },
+  "AdviceRequestDLQPolicy9D0CF7E8": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "AdviceRequestDLQ1EC9AC4D",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "AdviceRequestDLQ1EC9AC4D"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/AdviceRequestDLQ/Policy/Resource"
+   }
+  },
+  "AdviceRequestQueue8CBFDE05": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 345600,
+    "QueueName": "AdviceRequest",
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "AdviceRequestDLQ1EC9AC4D",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 3
+    },
+    "SqsManagedSseEnabled": true,
+    "VisibilityTimeout": 300
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/AdviceRequestQueue/Resource"
+   }
+  },
+  "AdviceRequestQueuePolicy7368ABF4": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "AdviceRequestQueue8CBFDE05",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "AdviceRequestQueue8CBFDE05"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/AdviceRequestQueue/Policy/Resource"
+   }
+  },
+  "NotifyDLQBCF14522": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 1209600,
+    "QueueName": "NotifyDLQ",
+    "SqsManagedSseEnabled": true
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/NotifyDLQ/Resource"
+   }
+  },
+  "NotifyDLQPolicyB0CC1DFF": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "NotifyDLQBCF14522",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "NotifyDLQBCF14522"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/NotifyDLQ/Policy/Resource"
+   }
+  },
+  "NotifyQueueB34E1758": {
+   "Type": "AWS::SQS::Queue",
+   "Properties": {
+    "MessageRetentionPeriod": 604800,
+    "QueueName": "NotifyQueue",
+    "RedrivePolicy": {
+     "deadLetterTargetArn": {
+      "Fn::GetAtt": [
+       "NotifyDLQBCF14522",
+       "Arn"
+      ]
+     },
+     "maxReceiveCount": 3
+    },
+    "SqsManagedSseEnabled": true,
+    "VisibilityTimeout": 300
+   },
+   "UpdateReplacePolicy": "Delete",
+   "DeletionPolicy": "Delete",
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/NotifyQueue/Resource"
+   }
+  },
+  "NotifyQueuePolicyD1B6FA2F": {
+   "Type": "AWS::SQS::QueuePolicy",
+   "Properties": {
+    "PolicyDocument": {
+     "Statement": [
+      {
+       "Action": "sqs:*",
+       "Condition": {
+        "Bool": {
+         "aws:SecureTransport": "false"
+        }
+       },
+       "Effect": "Deny",
+       "Principal": {
+        "AWS": "*"
+       },
+       "Resource": {
+        "Fn::GetAtt": [
+         "NotifyQueueB34E1758",
+         "Arn"
+        ]
+       }
+      }
+     ],
+     "Version": "2012-10-17"
+    },
+    "Queues": [
+     {
+      "Ref": "NotifyQueueB34E1758"
+     }
+    ]
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/NotifyQueue/Policy/Resource"
+   }
+  },
+  "CDKMetadata": {
+   "Type": "AWS::CDK::Metadata",
+   "Properties": {
+    "Analytics": "v2:deflate64:H4sIAAAAAAAA/02LSw7CMBBDz9J9OpR0w7ocgO8e5TNIadoEmISqinJ3VIJUNrafLXPgvIWmEhPVStt6MBLSJQhlmZjolvTsxOi1hKuQA3aCkFELqYvKYmD7u/ulYkc/GDWvdeHM6EmQThEjLlsJX10Pf5jzUhxieMSQmfMaoafNe7sD3gCvejKmfkUXzIhwLv4Bvli3xMcAAAA="
+   },
+   "Metadata": {
+    "aws:cdk:path": "WeatherAlertDataStack/CDKMetadata/Default"
+   }
+  }
+ },
+ "Outputs": {
+  "MumTableName": {
+   "Description": "DynamoDB table for maternal profiles",
+   "Value": "MumBaseTable"
+  },
+  "DataBucketName": {
+   "Description": "S3 bucket for data uploads",
+   "Value": {
+    "Ref": "WeatherAlertDataBucketD16F4096"
+   }
+  },
+  "LocationFetchQueueUrl": {
+   "Description": "SQS queue for location fetch",
+   "Value": {
+    "Ref": "LocationFetchQueue91236619"
+   }
+  },
+  "NotifyQueueUrl": {
+   "Description": "SQS queue for final notifications",
+   "Value": {
+    "Ref": "NotifyQueueB34E1758"
+   }
+  },
+  "ExportsOutputFnGetAttLocationFetchQueue91236619ArnF5D7573C": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LocationFetchQueue91236619",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "WeatherAlertDataStack:ExportsOutputFnGetAttLocationFetchQueue91236619ArnF5D7573C"
+   }
+  },
+  "ExportsOutputRefLocationFetchQueue91236619E574A292": {
+   "Value": {
+    "Ref": "LocationFetchQueue91236619"
+   },
+   "Export": {
+    "Name": "WeatherAlertDataStack:ExportsOutputRefLocationFetchQueue91236619E574A292"
+   }
+  },
+  "ExportsOutputFnGetAttWeatherResultQueueE0248ACEArn15DCF5A1": {
+   "Value": {
+    "Fn::GetAtt": [
+     "WeatherResultQueueE0248ACE",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "WeatherAlertDataStack:ExportsOutputFnGetAttWeatherResultQueueE0248ACEArn15DCF5A1"
+   }
+  },
+  "ExportsOutputRefWeatherResultQueueE0248ACE7A86D590": {
+   "Value": {
+    "Ref": "WeatherResultQueueE0248ACE"
+   },
+   "Export": {
+    "Name": "WeatherAlertDataStack:ExportsOutputRefWeatherResultQueueE0248ACE7A86D590"
+   }
+  },
+  "ExportsOutputFnGetAttNotifyQueueB34E1758Arn0733E2D4": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NotifyQueueB34E1758",
+     "Arn"
+    ]
+   },
+   "Export": {
+    "Name": "WeatherAlertDataStack:ExportsOutputFnGetAttNotifyQueueB34E1758Arn0733E2D4"
+   }
+  },
+  "ExportsOutputRefNotifyQueueB34E17580319ED30": {
+   "Value": {
+    "Ref": "NotifyQueueB34E1758"
+   },
+   "Export": {
+    "Name": "WeatherAlertDataStack:ExportsOutputRefNotifyQueueB34E17580319ED30"
+   }
+  },
+  "ExportsOutputFnGetAttLocationFetchQueue91236619QueueName00B3E0EE": {
+   "Value": {
+    "Fn::GetAtt": [
+     "LocationFetchQueue91236619",
+     "QueueName"
+    ]
+   },
+   "Export": {
+    "Name": "WeatherAlertDataStack:ExportsOutputFnGetAttLocationFetchQueue91236619QueueName00B3E0EE"
+   }
+  },
+  "ExportsOutputFnGetAttWeatherResultQueueE0248ACEQueueName21D206D0": {
+   "Value": {
+    "Fn::GetAtt": [
+     "WeatherResultQueueE0248ACE",
+     "QueueName"
+    ]
+   },
+   "Export": {
+    "Name": "WeatherAlertDataStack:ExportsOutputFnGetAttWeatherResultQueueE0248ACEQueueName21D206D0"
+   }
+  },
+  "ExportsOutputFnGetAttNotifyQueueB34E1758QueueName41D06F23": {
+   "Value": {
+    "Fn::GetAtt": [
+     "NotifyQueueB34E1758",
+     "QueueName"
+    ]
+   },
+   "Export": {
+    "Name": "WeatherAlertDataStack:ExportsOutputFnGetAttNotifyQueueB34E1758QueueName41D06F23"
+   }
+  }
+ },
+ "Parameters": {
+  "BootstrapVersion": {
+   "Type": "AWS::SSM::Parameter::Value<String>",
+   "Default": "/cdk-bootstrap/hnb659fds/version",
+   "Description": "Version of the CDK Bootstrap resources in this environment, automatically retrieved from SSM Parameter Store. [cdk:skip]"
+  }
+ },
+ "Rules": {
+  "CheckBootstrapVersion": {
+   "Assertions": [
+    {
+     "Assert": {
+      "Fn::Not": [
+       {
+        "Fn::Contains": [
+         [
+          "1",
+          "2",
+          "3",
+          "4",
+          "5"
+         ],
+         {
+          "Ref": "BootstrapVersion"
+         }
+        ]
+       }
+      ]
+     },
+     "AssertDescription": "CDK bootstrap stack version 6 required. Please run 'cdk bootstrap' with a recent version of the CDK CLI."
+    }
+   ]
+  }
+ }
+}
