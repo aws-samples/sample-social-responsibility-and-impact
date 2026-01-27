@@ -35,7 +35,7 @@ def send_sms(phone, message):
         "message": message,
         "from": AT_SENDER_ID
     }
-    print(f"Attempting to send SMS to {phone[:4]}****. Message length: {len(message)} chars")
+    print(f"Attempting to send SMS. Message length: {len(message)} chars")
     print(f"AT_API_KEY: {'SET' if AT_API_KEY else 'NOT SET'}")
     print(f"AT_USERNAME: {'SET' if AT_USERNAME else 'NOT SET'}")
     print(f"AT_SENDER_ID: {AT_SENDER_ID}")
@@ -70,14 +70,14 @@ def lambda_handler(event, context):
                 print(f"Missing phone or advice in message: {msg}")
                 continue
             
-            print(f"[SendAdviceSMSFn] Sending to {phone[:4]}****")
+            print(f"[SendAdviceSMSFn] Sending SMS notification")
             result = send_sms(phone, advice)
             
             if 'error' not in result:
                 processed += 1
-                print(f"[SendAdviceSMSFn] Successfully sent to {phone[:4]}****")
+                print(f"[SendAdviceSMSFn] Successfully sent SMS notification")
             else:
-                print(f"[SendAdviceSMSFn] Failed to send to {phone[:4]}****: {result['error']}")
+                print(f"[SendAdviceSMSFn] Failed to send SMS notification: {result['error']}")
                 
         except Exception as e:
             print(f"[SendAdviceSMSFn] Error processing record: {e}")
