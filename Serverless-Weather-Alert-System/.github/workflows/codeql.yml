@@ -1,5 +1,8 @@
 name: "CodeQL"
 
+# This workflow scans code for security vulnerabilities
+# It uses a custom config to exclude third-party library code
+
 on:
   push:
     branches: [ "main" ]
