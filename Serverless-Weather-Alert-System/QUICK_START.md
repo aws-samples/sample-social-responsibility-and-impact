@@ -211,6 +211,7 @@ aws cloudformation delete-stack --stack-name WeatherAlertBedrockKB --region $AWS
 
 ## Next Steps
 
+- **Testing**: See [TESTING_WORKFLOW.md](TESTING_WORKFLOW.md) for complete testing guide, monitoring, and troubleshooting
 - **Customize**: See [CUSTOMIZATION.md](CUSTOMIZATION.md)
 - **Architecture**: See [ARCHITECTURE.md](ARCHITECTURE.md)
 - **Full Guide**: See [DEPLOYMENT_GUIDE.md](DEPLOYMENT_GUIDE.md)

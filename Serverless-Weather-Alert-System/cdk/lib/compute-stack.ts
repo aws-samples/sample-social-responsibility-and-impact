@@ -34,7 +34,7 @@ export class WeatherAlertComputeStack extends cdk.Stack {
     const tomorrowIoSecret = secretsmanager.Secret.fromSecretNameV2(
       this,
       'TomorrowIoSecret',
-      'weather-alert/api-key'
+      'weather-alert-system/api-key'
     );
 
     // Commented out - Africa's Talking is optional
@@ -268,7 +268,8 @@ export class WeatherAlertComputeStack extends cdk.Stack {
               'Resource::*',
               'Action::logs:CreateLogStream',
               'Action::logs:PutLogEvents',
-              'Resource::arn:aws:bedrock:us-east-1:<AWS::AccountId>:knowledge-base/*',
+              `Resource::arn:aws:bedrock:${this.region}:${this.account}:knowledge-base/*`,
+              'Resource::<MumBaseTableF15CC75C.Arn>/index/*',
             ],
           },
         ]

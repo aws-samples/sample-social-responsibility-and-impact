@@ -30,19 +30,6 @@ export class WeatherAlertMonitoringStack extends cdk.Stack {
       enforceSSL: true, // Enforce SSL/TLS for all communications
     });
 
-    // Add explicit topic policy to deny non-SSL requests (defense in depth)
-    alarmTopic.addToResourcePolicy(new iam.PolicyStatement({
-      sid: 'AllowPublishThroughSSLOnly',
-      effect: iam.Effect.DENY,
-      principals: [new iam.AnyPrincipal()],
-      actions: ['sns:Publish'],
-      resources: [alarmTopic.topicArn],
-      conditions: {
-        'Bool': {
-          'aws:SecureTransport': 'false',
-        },
-      },
-    }));
 
     // CloudWatch Dashboard
     const dashboard = new cloudwatch.Dashboard(this, 'WeatherAlertDashboard', {

@@ -7,7 +7,7 @@ import { Construct } from 'constructs';
 import { NagSuppressions } from 'cdk-nag';
 
 export class WeatherAlertDataStack extends cdk.Stack {
-  public readonly mumTable: dynamodb.ITable;
+  public readonly mumTable: dynamodb.Table;
   public readonly dataBucket: s3.Bucket;
   public readonly locationFetchQueue: sqs.Queue;
   public readonly locationFetchDLQ: sqs.Queue;
@@ -19,16 +19,7 @@ export class WeatherAlertDataStack extends cdk.Stack {
     super(scope, id, props);
 
     // DynamoDB Table for Recipients
-    // Import existing table if it exists, otherwise create new one
-    // This allows the stack to work with pre-existing data
-    this.mumTable = dynamodb.Table.fromTableName(
-      this,
-      'MumBaseTable',
-      'MumBaseTable'
-    );
-
-    // Note: If deploying fresh, comment out the above and uncomment below to create the table
-    /*
+    // Create new table for fresh deployments
     this.mumTable = new dynamodb.Table(this, 'MumBaseTable', {
       tableName: 'MumBaseTable',
       partitionKey: {
@@ -55,7 +46,6 @@ export class WeatherAlertDataStack extends cdk.Stack {
       },
       projectionType: dynamodb.ProjectionType.ALL,
     });
-    */
 
     // S3 Bucket for initial data uploads and backups
     this.dataBucket = new s3.Bucket(this, 'WeatherAlertDataBucket', {

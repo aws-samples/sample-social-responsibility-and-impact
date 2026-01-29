@@ -136,5 +136,4 @@ cdk/outputs.json
 cdk/response*.json
 response*.json
 payload.json
-bedrock-kb-export.yaml
 cdk - Copy/
