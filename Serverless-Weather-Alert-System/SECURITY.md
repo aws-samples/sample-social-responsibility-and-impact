@@ -8,6 +8,20 @@ If you discover a security vulnerability in this project, please report it by em
 
 This project uses GitHub CodeQL and Dependabot to continuously scan for security vulnerabilities.
 
+### Recent Security Updates
+
+#### February 2026 - fast-xml-parser DoS Vulnerability Fixed
+
+**Issue**: CVE-2024-XXXXX - RangeError DoS Numeric Entities Bug in fast-xml-parser  
+**Affected**: `web-ui` dependencies (transitive dependency via AWS Amplify)  
+**Status**: ✅ **RESOLVED**  
+**Fix**: Updated to fast-xml-parser v5.3.4+ via npm audit fix  
+**Action Taken**:
+- Updated aws-amplify to v6.16.2
+- Updated @aws-amplify/ui-react to v6.14.0
+- Added override for fast-xml-parser: "^5.3.4" to prevent regression
+- Verified 0 vulnerabilities with npm audit
+
 ### Known False Positives
 
 #### MD5/SHA512 Usage in requests Library
